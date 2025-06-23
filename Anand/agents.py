@@ -4,24 +4,6 @@ from openai import OpenAI
 
 import openmeteo_requests
 
-
-API_KEY = "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"
-
-ROOT = pathlib.Path(__file__).resolve().parent
-
-ADAPTER_DIR = ROOT / "adapters"
-ADAPTER_DIR.mkdir(exist_ok=True)
-
-LOG_DIR = ROOT / "logs"
-LOG_DIR.mkdir(exist_ok=True)
-
-
-vila_adapter_path = ADAPTER_DIR / "vila_adapter.txt"
-nemo_adapter_path = ADAPTER_DIR / "nemo_adapter.txt"
-
-vila_logs = pathlib.Path(LOG_DIR / "vila_log.jsonl")
-nemo_logs = pathlib.Path(LOG_DIR / "nemo_log.jsonl")
-
 client = OpenAI(
     base_url = "https://integrate.api.nvidia.com/v1",
     api_key = API_KEY
