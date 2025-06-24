@@ -1,13 +1,16 @@
 import os
 import json
+from dotenv import load_dotenv
 
-from SQL_connection import connection_sql, preprocess_sql
+from sql_connection import connection_sql, preprocess_sql
 from embeddings_reranker import embedder_reranker
 from weather_api import current_weather,hourly_weather
-from cause_prediction_LLM import cause_prediction_LLM
+from cause_prediction_llm import cause_prediction_LLM
 from vila_image_summarizer import image_summarizer
 from insights_agent import insights_agent
 from alert_agent import dispatch_to_responders
+
+load_dotenv()
 
 # NVIDIA model initialization
 embedding_model = 'nvidia/nv-embedqa-e5-v5'
