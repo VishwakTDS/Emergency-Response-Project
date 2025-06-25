@@ -55,8 +55,8 @@ def current_weather(lat,long):
 
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
-            "latitude": 52,
-            "longitude": 112,
+            "latitude": lat,
+            "longitude": long,
             "current": ["temperature_2m", "wind_speed_10m", "wind_direction_10m", "precipitation", "relative_humidity_2m", "is_day", "rain", "showers", "snowfall", "cloud_cover", "pressure_msl", "surface_pressure", "weather_code", "apparent_temperature", "wind_gusts_10m"],
             "timezone": "auto"
         }
@@ -88,16 +88,16 @@ def current_weather(lat,long):
                     "current_wind_direction_10m":current_wind_direction_10m,
                     "current_precipitation":current_precipitation,
                     "current_relative_humidity_2m":current_relative_humidity_2m,
-                    "current_is_day":current_is_day,
-                    "current_rain":current_rain,
-                    "current_showers":current_showers,
-                    "current_snowfall":current_snowfall,
-                    "current_cloud_cover":current_cloud_cover,
-                    "current_pressure_msl":current_pressure_msl,
-                    "current_surface_pressure":current_surface_pressure,
-                    "current_weather_code":current_weather_code,
-                    "current_apparent_temperature":current_apparent_temperature,
-                    "current_wind_gusts_10m":current_wind_gusts_10m
+                    # "current_is_day":current_is_day,
+                    # "current_rain":current_rain,
+                    # "current_showers":current_showers,
+                    # "current_snowfall":current_snowfall,
+                    # "current_cloud_cover":current_cloud_cover,
+                    # "current_pressure_msl":current_pressure_msl,
+                    # "current_surface_pressure":current_surface_pressure,
+                    # "current_weather_code":current_weather_code,
+                    # "current_apparent_temperature":current_apparent_temperature,
+                    # "current_wind_gusts_10m":current_wind_gusts_10m
                     }
 
     current_json = json.dumps(current_df)

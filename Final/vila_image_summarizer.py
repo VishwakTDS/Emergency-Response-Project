@@ -21,10 +21,19 @@ def image_summarizer(uploaded_file):
     Inferred Urgency & Priority: Based on the visual evidence, infer the immediate urgency of the situation and suggest potential priorities for response (e.g., life safety, containment, damage control).
     Key Elements (Concise List): Provide a brief, bulleted list of the most critical elements identified that define the situation.
     The summary should be objective, descriptive, and focus on providing concrete observations that would inform a rapid response or further investigation.
+    Also generate the probablity/confidence of threat.
+    Give the answer in json format, no extra information.
+
+    NUMERIC FORMAT ‒ Probabilities must be written with **two decimals** (e.g. 0.03, 0.58, 0.97).   ‒ Avoid rounding everything to extremes like 0.00 or 1.00 unless highly certain.
+    Keep image summary under 200 words.
+    **OUTPUT/JSON FORMAT**:
+    {
+        "image_summary":[summary of image]
+        "probablity":[probablity/confidence of the threat]
+    } 
     """
     
-    media_samples = list(uploaded_file)
-
+    media_samples = [uploaded_file]
 
     invoke_url = "https://ai.api.nvidia.com/v1/vlm/nvidia/vila"
     stream = False
@@ -123,7 +132,7 @@ def image_summarizer(uploaded_file):
             }
         ]
         payload = {
-            "max_tokens": 1024,
+            "max_tokens": 256,
             "temperature": 0.2,
             "top_p": 0.7,
             "seed": 50,
@@ -150,5 +159,7 @@ def image_summarizer(uploaded_file):
     # Run the main inference
     vila_output = chat_with_media_nvcf(invoke_url, media_samples, vila_prompt, stream)
     image_summary = str(vila_output['choices'][0]['message']['content'])
+    print("Summary:")
+    print(image_summary)
 
     return image_summary

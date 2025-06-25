@@ -23,7 +23,7 @@ def dispatch_to_responders(agencies):
     }
 
     result = {
-        "responders" : agencies.strip("|")
+        "responders" : agencies.split("|")
     }
 
     print("\n Dispatching alerts to responders...\n")
