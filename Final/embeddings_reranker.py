@@ -88,10 +88,9 @@ from uuid import uuid4
 
 def embedder_reranker(embedding_model, reranker_model, documents_new, image_summary):
 
-    for d in documents_new:
-            d.metadata.setdefault("doc_id", str(uuid4()))
-    ids = [d.metadata["doc_id"] for d in documents_new]
-
+    # for d in documents_new:
+    #         d.metadata.setdefault("doc_id", str(uuid4()))
+    ids = [str(d.metadata['event_id']) for d in documents_new]
     embedder = NVIDIAEmbeddings(model=embedding_model, truncate="END")
    
     vectorstore = Chroma.from_documents(
@@ -112,5 +111,5 @@ def embedder_reranker(embedding_model, reranker_model, documents_new, image_summ
     # print("TOP TWO MATCHES:")
     # for d in top_two:
     #     print(d.page_content)
-    vectorstore.persist()
+    # vectorstore.persist()
     return top_two
