@@ -162,7 +162,7 @@ def insights_agent(image_summary,api_data, insights_agents_model , curr_summary)
 
     print(f"PRINTING INSIGHTS  BEFORE: {nemo_out}")
 
-    nemo_out = nemo_out.replace("```json","").replace("```","")
+    #nemo_out = nemo_out.replace("```json","").replace("```","")
     print("Insights agent output:")
     print(nemo_out)
 

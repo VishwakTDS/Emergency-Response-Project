@@ -5,7 +5,7 @@ import requests
 
 
 # dispatcher function
-def dispatch_to_responders(agencies):
+def dispatch_to_responders(agencies, messages):
     # simulated responder endpoints
     default_url = "https://httpbin.org/post"
     responder_urls = {
@@ -37,9 +37,7 @@ def dispatch_to_responders(agencies):
 
         payload = {
             "responder": responder,
-            "message": result.get("message", "No message provided."),
-            "priority": result.get("priority", "Unknown"),
-            "actions": result.get("actions", [])
+            "message": messages
         }
 
         print(f"\n Sending alert to {responder} → {url}")

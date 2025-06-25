@@ -38,7 +38,7 @@ else:
 
 
 # Image to summary using vila
-image_summary = image_summarizer('Test.png')
+image_summary = image_summarizer('test2.png')
 
 #################################################
 ########## Hardcoded Now, change Later ########## 
@@ -86,8 +86,9 @@ insights_agent_output_json = insights_agent(image_summary,weather_api_data.strip
 
 # Alert LLM
 agencies = insights_agent_output_json.get("agency","")
+messages = insights_agent_output_json.get("messages","")
 
 print(f"PRINTING AGENCIES: {agencies}")
 
 if agencies:
-    dispatch_to_responders(agencies)
+    dispatch_to_responders(agencies, messages)
