@@ -88,16 +88,16 @@ def current_weather(lat,long):
                     "current_wind_direction_10m":current_wind_direction_10m,
                     "current_precipitation":current_precipitation,
                     "current_relative_humidity_2m":current_relative_humidity_2m,
-                    # "current_is_day":current_is_day,
-                    # "current_rain":current_rain,
-                    # "current_showers":current_showers,
-                    # "current_snowfall":current_snowfall,
-                    # "current_cloud_cover":current_cloud_cover,
-                    # "current_pressure_msl":current_pressure_msl,
-                    # "current_surface_pressure":current_surface_pressure,
-                    # "current_weather_code":current_weather_code,
-                    # "current_apparent_temperature":current_apparent_temperature,
-                    # "current_wind_gusts_10m":current_wind_gusts_10m
+                    "current_is_day":current_is_day,
+                    "current_rain":current_rain,
+                    "current_showers":current_showers,
+                    "current_snowfall":current_snowfall,
+                    "current_cloud_cover":current_cloud_cover,
+                    "current_pressure_msl":current_pressure_msl,
+                    "current_surface_pressure":current_surface_pressure,
+                    "current_weather_code":current_weather_code,
+                    "current_apparent_temperature":current_apparent_temperature,
+                    "current_wind_gusts_10m":current_wind_gusts_10m
                     }
 
     current_json = json.dumps(current_df)

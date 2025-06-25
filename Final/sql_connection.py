@@ -47,8 +47,6 @@ def preprocess_summary_sql(results):
          date_occurred,
          time_occurred) = row
         
-        
-    
         content = f"""{threat_summary}"""
 
         doc = Document(
@@ -60,8 +58,6 @@ def preprocess_summary_sql(results):
             }
         )
         documents_new.append(doc)
-    
-
 
     return documents_new
 
@@ -112,9 +108,5 @@ def preprocess_whole_sql(results,event_ids):
                 }
             )
             documents.append(doc)
-    
-    
-
-    print(f"Loaded {len(documents)} document elements from the database.")
 
     return documents

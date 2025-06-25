@@ -4,12 +4,9 @@ from langchain.schema.runnable import Runnable, RunnablePassthrough, RunnableCon
 from langchain_core.runnables import RunnableParallel
 from langchain_nvidia_ai_endpoints import ChatNVIDIA
 
-# def cause_prediction_LLM(NV_rerank, vectorstore, cause_prediction_llm_model, image_summary,api_data=None):
 def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary,api_data=None):
     try:
         llm = ChatNVIDIA(model=cause_prediction_llm_model)
-
-        
 
         prompt = ChatPromptTemplate.from_messages(
             [
@@ -25,36 +22,17 @@ def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary,api_dat
             ]
         )
 
-        
-
-        # --- 3. chain = prompt → model → string -------------------------------
         chain = prompt | llm | StrOutputParser()
 
-        # --- 4. run ------------------------------------------------------------
         result_text = chain.invoke(
             {
-                "context":  top2,      # ← your retrieved docs
-                "question": image_summary,     # ← e.g. the image summary
+                "context":  top2,
+                "question": image_summary,
                 "api_data" : api_data
             }
         )
 
-        # print(result_text)
-
-        # # Prepare the input data for invoking the chain
-        # input_data = {
-        #     "context": image_summary,  # Assuming this is the context you want to use
-            
-        #     "api_data": api_data if api_data else "No additional context provided." , # Handle None case
-        # }
-
-        # return chain.invoke(image_summary) + chain.invoke("\nMore contextual information(API DATA): " + api_data)
         return result_text
-
-
-        # print("prompt for cause prediction LLM:")
-        # print(image_summary+"\n More contextual information(API DATA): "+api_data)
-        # return chain.invoke(image_summary+"\n More contextual information(API DATA): "+api_data)
     
     except Exception as e:
         print(f"An error occurred: {e}")

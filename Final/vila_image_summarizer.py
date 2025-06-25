@@ -75,7 +75,6 @@ def image_summarizer(uploaded_file):
         )
         authorize.raise_for_status()
         authorize_res = authorize.json()
-        print(f"Uploading to: {authorize_res['uploadUrl']}")
         response = requests.put(
             authorize_res["uploadUrl"],
             data=data_input,
@@ -86,7 +85,6 @@ def image_summarizer(uploaded_file):
             timeout=300,
         )
         response.raise_for_status()
-        print(f"Uploaded asset_id {authorize_res['assetId']}")
         return uuid.UUID(authorize_res["assetId"])
 
     def _delete_asset(asset_id):
@@ -115,7 +113,6 @@ def image_summarizer(uploaded_file):
             assert len(media_files) == 1, "Only single video supported."
 
         asset_seq = ",".join(asset_list)
-        print(f"Assets uploaded: {asset_seq}")
 
         headers = {
             "Authorization": f"Bearer {kApiKey}",
@@ -148,10 +145,8 @@ def image_summarizer(uploaded_file):
                 if line:
                     print(line.decode("utf-8"))
         else:
-            print(response.json())
             return response.json()
 
-        print(f"Deleting assets: {asset_list}")
         for asset_id in asset_list:
             _delete_asset(asset_id)
 
@@ -159,7 +154,5 @@ def image_summarizer(uploaded_file):
     # Run the main inference
     vila_output = chat_with_media_nvcf(invoke_url, media_samples, vila_prompt, stream)
     image_summary = str(vila_output['choices'][0]['message']['content'])
-    print("Summary:")
-    print(image_summary)
 
     return image_summary

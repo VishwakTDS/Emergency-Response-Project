@@ -1,8 +1,5 @@
-
 import json
 import requests
-
-
 
 # dispatcher function
 def dispatch_to_responders(agencies, messages):
@@ -26,7 +23,7 @@ def dispatch_to_responders(agencies, messages):
         "responders" : agencies.split("|")
     }
 
-    print("\n Dispatching alerts to responders...\n")
+    print("Dispatching alerts to responders...\n")
 
     if not result or "responders" not in result:
         print(" No valid 'responders' field in result.")

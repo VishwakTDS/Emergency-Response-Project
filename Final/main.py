@@ -27,18 +27,23 @@ if not current_key.startswith("nvapi-"):
 
 # Connect to database
 results = connection_sql("Wildfire_Response_Database")
-threat_summary_meta_data = preprocess_summary_sql(results)
-
 if results:
-    # documents = preprocess_whole_sql(results)
     print("Connected to database")
 else:
     print("No database results found")
     exit()
 
+# Preprocess data
+threat_summary_meta_data = preprocess_summary_sql(results)
+print(f"Loaded {len(threat_summary_meta_data)} rows from the database")
+print('\n\n----------\n\n')
+
 
 # Image to summary using vila
-image_summary = image_summarizer('test2.png')
+image_summary = image_summarizer('test3.png')
+print("Image summary:")
+print(image_summary)
+print('\n\n----------\n\n')
 
 #################################################
 ########## Hardcoded Now, change Later ########## 
@@ -61,34 +66,28 @@ if current_weather_json :
 
 # Embedding and reranking
 top2 = embedder_reranker(embedding_model, reranker_model, threat_summary_meta_data ,image_summary)
-print("\n\n Getting top 2 situations \n\n\n")
-print(top2)
 
 # Fetch the top 2 event ids
 event_ids = [doc.metadata["event_id"] for doc in top2]
-print("Top-2 event IDs:", event_ids) 
 
+# Get full table data from top 2 occurrences
+documents = preprocess_whole_sql(results, event_ids)
 
-# From the results , grab values of all columns for that 2 ids
-
-documents = preprocess_whole_sql(results,event_ids)
-# Convert it into a document or a string
-# Pass it into the cause prediction model
-
-# LLM
-# cause_prediction_llm_output = cause_prediction_LLM(NV_rerank, vectorstore, cause_prediction_llm_model, image_summary,weather_api_data.strip())
+# Cause Prediction LLM
 cause_prediction_llm_output = cause_prediction_LLM(documents, cause_prediction_llm_model, image_summary,weather_api_data.strip())
-print("Cause :")
+print("Cause prediction LLM:")
 print(cause_prediction_llm_output)
+print('\n\n----------\n\n')
 
 # Insights LLM
 insights_agent_output_json = insights_agent(image_summary,weather_api_data.strip(),insights_agents_model,cause_prediction_llm_output)
+print("Insights LLM:")
+print(insights_agent_output_json)
+print('\n\n----------\n\n')
 
 # Alert LLM
 agencies = insights_agent_output_json.get("agency","")
 messages = insights_agent_output_json.get("messages","")
-
-print(f"PRINTING AGENCIES: {agencies}")
 
 if agencies:
     dispatch_to_responders(agencies, messages)
