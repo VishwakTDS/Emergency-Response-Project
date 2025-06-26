@@ -11,7 +11,7 @@ cause_prediction_llm_model = 'nvidia/llama-3.3-nemotron-super-49b-v1'
 insights_agents_model = 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
 
 # SQL database
-sql_database = 'Wildfire_Response_Database'
+sql_database = 'wildfire_db'
 sql_user = os.environ.get("SQL_USER", "")
 sql_password = os.environ.get("SQL_PASSWORD", "")
 sql_host = os.environ.get("SQL_HOST_IP", 'localhost')

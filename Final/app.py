@@ -1,8 +1,10 @@
 from master import input_processing, response_generator
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 
 app = Flask(__name__)
+CORS(app)
 @app.route('/response/v1', methods=['POST'])
 def receive_data():
     try:

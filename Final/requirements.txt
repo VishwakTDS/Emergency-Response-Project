@@ -69,3 +69,4 @@ zstandard==0.23.0
 chromadb
 flask
 pillow
+flask-cors
