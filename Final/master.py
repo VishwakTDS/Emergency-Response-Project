@@ -121,7 +121,7 @@ def response_generator(img, lat, lon):
     #     """+ hourly_weather_json
 
     # Embedding and reranking
-    top2 = embedder_reranker(threat_summary_meta_data ,image_summary)
+    top2 = embedder_reranker(embedding_model, reranker_model, threat_summary_meta_data ,image_summary)
 
     # Fetch the top 2 event ids
     event_ids = [doc.metadata["event_id"] for doc in top2]

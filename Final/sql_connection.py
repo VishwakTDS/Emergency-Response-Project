@@ -15,7 +15,7 @@ def connection_sql(dbname):
 
         cur = conn.cursor()
 
-        cur.execute('SELECT * FROM wildfire_events')
+        cur.execute('SELECT * FROM wildfire_emergencies')
 
         results = cur.fetchall()
 
