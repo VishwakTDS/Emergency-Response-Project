@@ -1,5 +1,5 @@
 from master import input_processing, response_generator
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 
 
@@ -12,7 +12,11 @@ def receive_data():
         media_input, latitude, longitude = input_processing(request)
 
         # Generate response plan
-        response_generator(media_input, latitude, longitude)
+        def generate():
+            for output in response_generator(media_input, latitude, longitude):
+                yield f"{output}\n\n"
+
+        return Response(generate(), mimetype='text/event-stream')
 
     except Exception as e:
         err = "Internal server error encountered"
@@ -25,7 +29,6 @@ def receive_data():
         "status":"success"
         }
     )
-    
 
 if __name__ == '__main__':
     app.run(debug=True)

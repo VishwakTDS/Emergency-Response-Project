@@ -103,10 +103,6 @@ def response_generator(img, lat, lon):
     print(image_summary)
     print('\n\n----------\n\n')
 
-    #################################################
-    ########## Hardcoded Now, change Later ########## 
-    #################################################
-
     # calling weather API
     current_weather_json = current_weather(lat,lon)
     hourly_weather_json = hourly_weather(lat,lon)
@@ -140,12 +136,14 @@ def response_generator(img, lat, lon):
         cause_prediction_llm_output = cause_prediction_LLM(documents, cause_prediction_llm_model, image_summary, weather_api_data.strip())
         print("Cause prediction LLM:")
         print(cause_prediction_llm_output)
+        yield cause_prediction_llm_output
         print('\n\n----------\n\n')
 
     # Insights LLM
         insights_agent_output_json = insights_agent(image_summary, weather_api_data.strip(), insights_agents_model, cause_prediction_llm_output, api_key_nvd)
         print("Insights LLM:")
         print(insights_agent_output_json)
+        yield insights_agent_output_json
         print('\n\n----------\n\n')
 
     # Alert LLM
@@ -158,6 +156,8 @@ def response_generator(img, lat, lon):
             agency_res = dispatch_to_responders(agencies, messages)
         else:
             agency_res = ["No agency data"]
+
+        yield agency_res
 
         # return cause_prediction_llm_output, insights_agent_output_json, agency_res
 
