@@ -17,4 +17,4 @@ sql_password = os.environ.get("SQL_PASSWORD", "")
 sql_host = os.environ.get("SQL_HOST_IP", 'localhost')
 
 # Input API Key
-current_key = os.environ.get("NVIDIA_API_KEY", "")
+api_key_nvd = os.environ.get("NVIDIA_API_KEY", "")

@@ -4,7 +4,7 @@ from langchain.schema.runnable import Runnable, RunnablePassthrough, RunnableCon
 from langchain_core.runnables import RunnableParallel
 from langchain_nvidia_ai_endpoints import ChatNVIDIA
 
-def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary,api_data=None):
+def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, api_data=None):
     try:
         llm = ChatNVIDIA(model=cause_prediction_llm_model)
 

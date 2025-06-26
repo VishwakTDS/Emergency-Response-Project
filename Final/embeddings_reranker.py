@@ -2,8 +2,6 @@ from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_nvidia_ai_endpoints import NVIDIARerank
 from langchain.schema import Document
-import time,json
-import os
 
 from uuid import uuid4
 

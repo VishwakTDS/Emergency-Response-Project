@@ -98,7 +98,7 @@ def response_generator(img, lat, lon):
     print('\n\n----------\n\n')
 
     # Image to summary using vila
-    image_summary = image_summarizer(img)
+    image_summary = image_summarizer(img, api_key_nvd)
     print("Image summary:")
     print(image_summary)
     print('\n\n----------\n\n')
@@ -130,20 +130,20 @@ def response_generator(img, lat, lon):
     documents = preprocess_whole_sql(results, event_ids)
 
     # Check API Key
-    if not current_key.startswith("nvapi-"):
+    if not api_key_nvd.startswith("nvapi-"):
         err = "Invalid API key"
         print(f"error: {err}")
         raise Exception(err)
 
     try:
     # Cause Prediction LLM
-        cause_prediction_llm_output = cause_prediction_LLM(documents, cause_prediction_llm_model, image_summary,weather_api_data.strip())
+        cause_prediction_llm_output = cause_prediction_LLM(documents, cause_prediction_llm_model, image_summary, weather_api_data.strip())
         print("Cause prediction LLM:")
         print(cause_prediction_llm_output)
         print('\n\n----------\n\n')
 
     # Insights LLM
-        insights_agent_output_json = insights_agent(image_summary,weather_api_data.strip(), insights_agents_model, cause_prediction_llm_output)
+        insights_agent_output_json = insights_agent(image_summary, weather_api_data.strip(), insights_agents_model, cause_prediction_llm_output, api_key_nvd)
         print("Insights LLM:")
         print(insights_agent_output_json)
         print('\n\n----------\n\n')

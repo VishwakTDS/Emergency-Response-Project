@@ -1,14 +1,11 @@
-import os
 from openai import OpenAI
 import json
 
-from config import insights_agents_model
-
-def agent2_llama(messages,insights_agents_model):
+def agent2_llama(messages,insights_agents_model, api_key_n):
     
     client = OpenAI(
         base_url = "https://integrate.api.nvidia.com/v1",
-        api_key = os.environ.get("NVIDIA_API_KEY", "")
+        api_key = api_key_n
     )
 
     res = client.chat.completions.create(
@@ -23,7 +20,7 @@ def agent2_llama(messages,insights_agents_model):
     )
     return res.choices[0].message.content
 
-def insights_agent(image_summary,api_data, curr_summary):
+def insights_agent(image_summary, api_data, insights_agents_model, curr_summary, api_key):
     prompt_content = """
     You are Emergency-Reasoning-Agent.
 
@@ -117,7 +114,7 @@ def insights_agent(image_summary,api_data, curr_summary):
         {"role":"system",
          "content":prompt_content}
     ]
-    nemo_out = agent2_llama(prompt,insights_agents_model)
+    nemo_out = agent2_llama(prompt, insights_agents_model, api_key)
 
     #nemo_out = nemo_out.replace("```json","").replace("```","")
 
