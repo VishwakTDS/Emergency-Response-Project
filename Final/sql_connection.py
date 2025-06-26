@@ -1,28 +1,30 @@
+from config import sql_user, sql_password, sql_host
+
 import psycopg2
 from langchain.docstore.document import Document
-import os,json
 
 def connection_sql(dbname):
     results = None
     try:
         conn = psycopg2.connect(
             dbname=dbname,
-            user=os.environ.get("SQL_USER", ""),
-            password=os.environ.get("SQL_PASSWORD", ""),
-            host="localhost"
+            user=sql_user,
+            password=sql_password,
+            host=sql_host
         )
 
         cur = conn.cursor()
 
-        cur.execute('SELECT * FROM wildfire_emergencies')
+        cur.execute('SELECT * FROM wildfire_events')
 
         results = cur.fetchall()
 
         return results
     
     except Exception as e:
-        print(f"Cannot load database: {e}")
-        return None
+        err = "Unable to load database"
+        print(f"error: {err}\n{e}")
+        raise Exception(err) from e
 
     finally:
         cur.close()

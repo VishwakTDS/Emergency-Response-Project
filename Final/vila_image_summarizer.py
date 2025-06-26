@@ -1,5 +1,4 @@
 
-# Imports
 import os
 import requests
 import json
@@ -7,10 +6,9 @@ import uuid
 
 import pandas as pd
 import numpy as np
-import time
 
 
-def image_summarizer(uploaded_file):
+def image_summarizer(uploaded_file, api_key):
     vila_prompt = """
     Analyze this image and provide a detailed summary focusing on elements relevant to incident assessment and response. The summary should include:
     Scene Description & Environment: Describe the overall environment (e.g., urban, rural, industrial, natural landscape), the visible terrain, and any significant features like structures, vehicles, or natural elements. Note the time of day or lighting conditions.
@@ -37,8 +35,8 @@ def image_summarizer(uploaded_file):
 
     invoke_url = "https://ai.api.nvidia.com/v1/vlm/nvidia/vila"
     stream = False
-    kApiKey = os.getenv("NVIDIA_API_KEY")
-    assert kApiKey, "Please set API_KEY"
+    kApiKey = api_key
+    # assert kApiKey, "Please set API_KEY"
 
     kNvcfAssetUrl = "https://api.nvcf.nvidia.com/v2/nvcf/assets"
     kSupportedList = {

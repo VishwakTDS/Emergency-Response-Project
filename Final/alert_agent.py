@@ -26,8 +26,11 @@ def dispatch_to_responders(agencies, messages):
     print("Dispatching alerts to responders...\n")
 
     if not result or "responders" not in result:
-        print(" No valid 'responders' field in result.")
-        return
+        resp = f"No valid 'responders' field in result."
+        print(resp)
+        return [resp]
+    
+    responder_data = []
 
     for responder in result["responders"]:
         url = responder_urls.get(responder, default_url)
@@ -40,13 +43,16 @@ def dispatch_to_responders(agencies, messages):
         print(f"\n Sending alert to {responder} → {url}")
         print("Payload:\n", json.dumps(payload, indent=2))
 
+        responder_data.append(responder_data)
+
         try:
             response = requests.post(url, json=payload)
             if response.status_code == 200:
                 print(f" Successfully sent to {responder}")
             else:
-                print(f" Failed to send to {responder} – Status code: {response.status_code}")
+                print(f" Failed to send to {responder} - Status code: {response.status_code}")
         except Exception as e:
-            print(f" Error while sending to {responder}: {e}")
-    return None 
-
+            err = f" Unable to send request to {responder}"
+            print(f"error: {err}\n{e}")
+        
+    return responder_data

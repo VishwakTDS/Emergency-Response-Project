@@ -2,6 +2,8 @@ import os
 from openai import OpenAI
 import json
 
+from config import insights_agents_model
+
 def agent2_llama(messages,insights_agents_model):
     
     client = OpenAI(
@@ -21,7 +23,7 @@ def agent2_llama(messages,insights_agents_model):
     )
     return res.choices[0].message.content
 
-def insights_agent(image_summary,api_data, insights_agents_model , curr_summary):
+def insights_agent(image_summary,api_data, curr_summary):
     prompt_content = """
     You are Emergency-Reasoning-Agent.
 

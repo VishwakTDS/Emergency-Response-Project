@@ -35,5 +35,6 @@ def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary,api_dat
         return result_text
     
     except Exception as e:
-        print(f"An error occurred: {e}")
-        return None
+        err = "Disruption occured during CAUSE PREDICTION AGENT runtime"
+        print(f"error: {err}\n{e}")
+        raise Exception(err) from e
