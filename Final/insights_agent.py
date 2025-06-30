@@ -32,7 +32,7 @@ def insights_agent(image_summary, api_data, insights_agents_model, curr_summary,
     """+"""
 
     """+f"""
-        Summary of current situation : 
+        Steps to be taken : 
         {curr_summary}
     """+"""
 
@@ -42,13 +42,13 @@ def insights_agent(image_summary, api_data, insights_agents_model, curr_summary,
     Return **exactly ONE** of the following JSON objects—nothing else, no Markdown, no commentary, no newlines before/after the braces:
 
     • Launch a drone  
-    {"action":"launch_drone","lat":<lat>,"lon":<lon>,"messages":[Summary from current situation]}
+    {"action":"launch_drone","lat":<lat>,"lon":<lon>,"messages":[Whole report of situation, with all data along with steps to be taken to responders]}
 
     • Call first responders  
-    {"action":"call_first_responders","agency":"fire_brigade|police|national_guard","lat":<lat>,"lon":<lon>,"messages":[Summary from current situation]}
+    {"action":"call_first_responders","agency":"fire_brigade|police|national_guard","lat":<lat>,"lon":<lon>,"messages":[Whole report of situation, with all data along with steps to be taken to responders]}
 
     • No emergency  
-    {"action":"no_emergency","messages":[Summary from current situation]}
+    {"action":"no_emergency","messages":[Whole report of situation, with all data along with steps to be taken to responders]}
 
     The JSON must contain only the keys shown above and must be valid (double-quoted strings, numeric lat/lon).
 
@@ -84,7 +84,7 @@ def insights_agent(image_summary, api_data, insights_agents_model, curr_summary,
     Input snippet:
     hazards.fire.prob = 0.85
     Expected output:
-    {"action":"call_first_responders","agency":"fire_brigade","lat":34.05,"lon":-118.25,"messages":[Summary from current situation]}
+    {"action":"call_first_responders","agency":"fire_brigade","lat":34.05,"lon":-118.25,"messages":[Whole report of situation, with all data along with steps to be taken to responders]}
 
     Example B (P moderate, weather raises to 0.55):
     Input snippet:
@@ -92,7 +92,7 @@ def insights_agent(image_summary, api_data, insights_agents_model, curr_summary,
     weather.wind_kph = 28  # +0.10
     weather.apparent_c = 25
     Expected output:
-    {"action":"launch_drone","lat":51.50,"lon":-0.12,"messages":[Summary from current situation]}
+    {"action":"launch_drone","lat":51.50,"lon":-0.12,"messages":[Whole report of situation, with all data along with steps to be taken to responders]}
 
     Example C (P low even after weather):
     Input snippet:
@@ -100,7 +100,7 @@ def insights_agent(image_summary, api_data, insights_agents_model, curr_summary,
     weather.wind_kph = 10
     weather.apparent_c = 22
     Expected output:
-    {"action":"no_emergency","messages":[Summary from current situation]}
+    {"action":"no_emergency","messages":[Whole report of situation, with all data along with steps to be taken to responders]}
 
 """.strip()
     
