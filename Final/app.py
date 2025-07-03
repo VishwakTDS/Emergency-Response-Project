@@ -12,7 +12,7 @@ def receive_data():
         media_input, latitude, longitude = input_processing(request)
 
         # Generate response plan
-        response_generator(media_input, latitude, longitude)
+        agent1, agent2, agent3 = response_generator(media_input, latitude, longitude)
 
     except Exception as e:
         err = "Internal server error encountered"
@@ -22,7 +22,9 @@ def receive_data():
         )
     
     return jsonify({
-        "status":"success"
+        "status":"success",
+        "agent1":agent1,
+        "agent2":agent2
         }
     )
     

@@ -159,7 +159,7 @@ def response_generator(img, lat, lon):
         else:
             agency_res = ["No agency data"]
 
-        # return cause_prediction_llm_output, insights_agent_output_json, agency_res
+        return cause_prediction_llm_output, insights_agent_output_json, agency_res
 
     
     except Exception as e:
