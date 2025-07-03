@@ -8,6 +8,8 @@ def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, api_da
     try:
         llm = ChatNVIDIA(model=cause_prediction_llm_model)
 
+        # llm = ChatNVIDIA(model=cause_prediction_llm_model, base_url="http://192.168.24.2:8800/v1")
+
         prompt = ChatPromptTemplate.from_messages(
             [
                 (

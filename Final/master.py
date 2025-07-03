@@ -111,6 +111,7 @@ def response_generator(img, lat, lon):
     current_weather_json = current_weather(lat,lon)
     hourly_weather_json = hourly_weather(lat,lon)
     weather_api_data = ""
+    print("Reached after weather")
     if current_weather_json :
         weather_api_data += """
         Current weather data:
@@ -143,13 +144,16 @@ def response_generator(img, lat, lon):
         print('\n\n----------\n\n')
 
     # Insights LLM
+        print("master.py: Running insights agent")
         insights_agent_output_json = insights_agent(image_summary, weather_api_data.strip(), insights_agents_model, cause_prediction_llm_output, api_key_nvd)
         print("Insights LLM:")
         print(insights_agent_output_json)
         print('\n\n----------\n\n')
 
     # Alert LLM
+        print("Getting agencies below:")
         agencies = insights_agent_output_json.get("agency","")
+        print("Getting messages below:")
         messages = insights_agent_output_json.get("messages","")
 
         agency_res = []

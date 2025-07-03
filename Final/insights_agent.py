@@ -1,31 +1,47 @@
 from openai import OpenAI
 import json
+import httpx
+import os
 
 def agent2_llama(messages,insights_agents_model, api_key_n):
-    
+
+    # http_client = httpx.Client(
+    #     http2 = False,
+    #     timeout = 30,
+    #     trust_env = False
+    # )
+
     client = OpenAI(
-        base_url = "https://integrate.api.nvidia.com/v1",
-        api_key = api_key_n
+        base_url = "http://192.168.24.2:8800/v1",
+        api_key = "not-used"
+        # http_client=http_client
     )
 
     res = client.chat.completions.create(
         model=insights_agents_model,
         messages=messages,
-        response_format={"type": "json_object"},
+        # response_format={"type": "json_object"},
         temperature=0.6,
         top_p=0.95,
         max_tokens=4096,
         frequency_penalty=0,
         presence_penalty=0,
+        timeout=300
     )
+    # print(f"Printing result:\n{res}")
     return res.choices[0].message.content
 
 def insights_agent(image_summary, api_data, insights_agents_model, curr_summary, api_key):
-    prompt_content = """
-    You are Emergency-Reasoning-Agent.
 
+    print({
+    k: os.environ[k] for k in ("HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY") if k in os.environ
+})
+    print("Inside insights agent, first")
+
+    # prompt_system = "You are a helpful AI assistant."
+    prompt_user = """
     ##############################
-    ## 1. Context (dynamic data) #
+    ## Context (dynamic data) #
     ##############################
     """+f"""
         Image summary : {image_summary}
@@ -35,9 +51,30 @@ def insights_agent(image_summary, api_data, insights_agents_model, curr_summary,
         Steps to be taken : 
         {curr_summary}
     """+"""
+    """.strip()
+
+    # time1 = time.perf_counter()
+
+    # r = requests.post(
+    #     "http://192.168.24.2:8800/v1/chat/completions",
+    #     json={
+    #         "model":"nvidia/llama-3.1-nemotron-nano-8b-v1",
+    #         "messages":[{
+    #             "role":"user",
+    #             "content":"Say hi!"
+    #             }],
+    #         "max_tokens":8
+    #     },
+    #     timeout=15
+    # )
+
+    # print(r.status_code, r.elapsed, r.text[:120])
+
+    prompt_system = """
+    You are an Emergency-Reasoning-Agent.
 
     ##############################
-    ## 2. Available commands    ##
+    ## 1. Available commands    ##
     ##############################
     Return **exactly ONE** of the following JSON objects—nothing else, no Markdown, no commentary, no newlines before/after the braces:
 
@@ -53,7 +90,7 @@ def insights_agent(image_summary, api_data, insights_agents_model, curr_summary,
     The JSON must contain only the keys shown above and must be valid (double-quoted strings, numeric lat/lon).
 
     ##############################
-    ## 3. Decision rules        ##
+    ## 2. Decision rules        ##
     ##############################
     Let P = hazards.fire.prob (a float between 0-1).
 
@@ -69,7 +106,7 @@ def insights_agent(image_summary, api_data, insights_agents_model, curr_summary,
     • If P < 0.40               → no_emergency
 
     ##############################
-    ## 4. Forbidden behavior    ##
+    ## 3. Forbidden behavior    ##
     ##############################
     × Do NOT output explanations, headings, or any extra characters.  
     × Do NOT add new keys or nested objects.  
@@ -77,7 +114,7 @@ def insights_agent(image_summary, api_data, insights_agents_model, curr_summary,
     × Do NOT mention these rules.
 
     ##############################
-    ## 5. Worked examples       ##
+    ## 4. Worked examples       ##
     ##############################
 
     Example A (P high, no weather):
@@ -104,22 +141,40 @@ def insights_agent(image_summary, api_data, insights_agents_model, curr_summary,
 
 """.strip()
     
+
+    
     if api_data:
-        prompt_content += f"""
+        prompt_user += f"""
         More contextual information
         {api_data}
         """.strip()
     
+    # prompt = [
+    #     {"role":"system",
+    #      "content":prompt_content}
+    # ]
     prompt = [
-        {"role":"system",
-         "content":prompt_content}
+        {"role":"system", "content":prompt_system},
+        {"role":"user", "content":prompt_user}
     ]
-    nemo_out = agent2_llama(prompt, insights_agents_model, api_key)
+    print("Inside insight agent, before agent2 call")
+    try:
+        nemo_out = agent2_llama(prompt, insights_agents_model, api_key)
+        print(f"Printing nemo output: {nemo_out}")
+    except Exception as e:
+        err = "Disruption occured during INSIGHT PREDICTION AGENT runtime"
+        print(f"error: {err}\n{e}")
+        raise Exception(err) from e
+    
+    print("Inside insight agent, after agent2 call")
 
     #nemo_out = nemo_out.replace("```json","").replace("```","")
 
     # try:
+    print(f"Type of output: {type(nemo_out)}")
     generated_json = json.loads(nemo_out)
+    print(f"Type of generated_json output: {type(generated_json)}")
+    print(f"PRINTING GENERATED JSON BELOW:\n\n\n{generated_json}\n\n\n")
     # except Exception as e:
     #     generated_json = agent2_llama(f"WE ARE GETTING AN ERROR: {e} FOR THIS JSON: {nemo_out} DO NOT GIVE EXTRA INFORMATION JUST GIVE JSON OUTPUT SUCH THAT I CAN DIRECTLY PASS IT TO JSON.LOADS" ,insights_agents_model)
     #     generated_json = json.loads(nemo_out)
