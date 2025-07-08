@@ -1,87 +1,72 @@
 import React, { useState } from "react";
-import Map from './Map'
+import IncidentUploadForm from "./components/IncidentUploadForm";
+import MapView from "./components/MapView";
 
 function App() {
   const [file, setFile] = useState(null);
   const [lat, setLat] = useState("");
   const [lon, setLon] = useState("");
   const [response, setResponse] = useState(null);
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
-  // let newLat = 33.338;
-  // let newLon = -111.895;
+  // Validation helpers
+  const isValidLat = (value) => !isNaN(value) && value >= -90 && value <= 90;
+  const isValidLon = (value) => !isNaN(value) && value >= -180 && value <= 180;
+
+  // Real-time validation
+  React.useEffect(() => {
+    const newErrors = {};
+    if (lat && !isValidLat(Number(lat))) newErrors.lat = "Latitude must be between -90 and 90.";
+    if (lon && !isValidLon(Number(lon))) newErrors.lon = "Longitude must be between -180 and 180.";
+    setErrors((prev) => ({ ...prev, ...newErrors }));
+  }, [lat, lon]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!file || !lat || !lon) {
-      alert("Please fill out all fields.");
-      return;
-    }
-
-    // newLat = lat ? parseFloat(lat) : 33.338;
-    // newLon = lon ? parseFloat(lon) : -111.895;
-
-    
-
+    const newErrors = {};
+    if (!file) newErrors.file = "File is required.";
+    if (!lat) newErrors.lat = "Latitude is required.";
+    else if (!isValidLat(Number(lat))) newErrors.lat = "Latitude must be between -90 and 90.";
+    if (!lon) newErrors.lon = "Longitude is required.";
+    else if (!isValidLon(Number(lon))) newErrors.lon = "Longitude must be between -180 and 180.";
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+    setLoading(true);
+    setResponse(null);
     const formData = new FormData();
     formData.append("input_media", file, file.name);
     formData.append("latitude", lat);
     formData.append("longitude", lon);
-
-    console.log("Printing from app.jsx")
-    console.log(typeof lat);
-    console.log(typeof lon);
-    console.log("Printing from app.jsx done")
-
     try {
       const res = await fetch("http://127.0.0.1:5000/response/v1", {
         method: "POST",
         body: formData,
       });
-
       const result = await res.json();
       setResponse(result);
-      console.log(result);
     } catch (err) {
-      console.error("Error submitting form", err);
       setResponse({ error: "Submission failed." });
-
+    } finally {
+      setLoading(false);
     }
   };
-// style={{ padding: "2rem", maxWidth: "500px", margin: "auto" }}
-  return (
-    // <div style={{ padding: "2rem", maxWidth: "500px", margin: "auto", border: "1px solid black" }}>
-    <div className="homepage" >
-      <div style={{border: "2px red solid"}}>
-        <h2>Emergency Incident Upload</h2>
-        <form onSubmit={handleSubmit}>
-          <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-          <br /><br />
-          <input
-            type="text"
-            placeholder="Latitude"
-            value={lat}
-            onChange={(e) => setLat(e.target.value)}
-          />
-          <br /><br />
-          <input
-            type="text"
-            placeholder="Longitude"
-            value={lon}
-            onChange={(e) => setLon(e.target.value)}
-          />
-          <br /><br />
-          <button type="submit">Submit</button>
-        </form>
-        {response && (
-          <div style={{ marginTop: "2rem" }}>
-            <h3>Server Response:</h3>
-            <pre>{JSON.stringify(response, null, 2)}</pre>
-          </div>
-        )}
-      </div>
 
-      <Map lat={lat} long={lon}/>
+  return (
+    <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center p-4">
+      <IncidentUploadForm
+        file={file}
+        lat={lat}
+        lon={lon}
+        setFile={setFile}
+        setLat={setLat}
+        setLon={setLon}
+        handleSubmit={handleSubmit}
+        response={response}
+        errors={errors}
+        loading={loading}
+      />
+      <MapView lat={lat} long={lon} />
     </div>
   );
 }
