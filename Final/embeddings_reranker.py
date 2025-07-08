@@ -7,7 +7,7 @@ from uuid import uuid4
 
 def embedder_reranker(embedding_model, reranker_model, documents_new, image_summary):
     ids = [str(d.metadata['event_id']) for d in documents_new]
-    embedder = NVIDIAEmbeddings(model=embedding_model, truncate="END")
+    embedder = NVIDIAEmbeddings(model=embedding_model, truncate="END", base_url="http://192.168.24.2:8001/v1")
    
     vectorstore = Chroma.from_documents(
         documents=documents_new,
@@ -17,7 +17,7 @@ def embedder_reranker(embedding_model, reranker_model, documents_new, image_summ
         persist_directory="./chroma_db"
     )
 
-    reranker = NVIDIARerank(model=reranker_model, top_n = 2)
+    reranker = NVIDIARerank(model=reranker_model, top_n = 2, base_url="http://192.168.24.2:8002/v1")
 
     def get_top2(query: str, prefetch_k: int = 5):
         cand = vectorstore.similarity_search(query, k=prefetch_k)
