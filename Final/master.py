@@ -150,13 +150,14 @@ def response_generator(img, lat, lon):
         agencies = insights_agent_output_json.get("agency","")
         messages = insights_agent_output_json.get("messages","")
 
-        agency_res = []
+        print("Alert LLM:")
 
         if agencies:
             agency_res = dispatch_to_responders(agencies, messages)
         else:
-            agency_res = ["No agency data"]
+            agency_res = "No agency data"
 
+        print(agency_res)
         yield agency_res
 
         # return cause_prediction_llm_output, insights_agent_output_json, agency_res
