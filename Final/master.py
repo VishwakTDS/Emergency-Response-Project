@@ -1,5 +1,6 @@
 import io
 import tempfile
+import json
 
 from PIL import Image
 
@@ -136,7 +137,8 @@ def response_generator(img, lat, lon):
         cause_prediction_llm_buffer = []
         for tok in cause_prediction_LLM(documents, cause_prediction_llm_model, image_summary, weather_api_data.strip()):
             cause_prediction_llm_buffer.append(tok)
-            yield tok
+            yield json.dumps({"type": "cause_prediction", "data": tok},
+                         ensure_ascii=False) + "\n"
         cause_prediction_llm_output = "".join(cause_prediction_llm_buffer)
         print("Cause prediction LLM:")
         print(cause_prediction_llm_output)
@@ -146,7 +148,8 @@ def response_generator(img, lat, lon):
         insights_agent_output_json = insights_agent(image_summary, weather_api_data.strip(), insights_agents_model, cause_prediction_llm_output, api_key_nvd)
         print("Insights LLM:")
         print(insights_agent_output_json)
-        yield insights_agent_output_json
+        yield json.dumps({"type": "insights", "data": insights_agent_output_json},
+                     ensure_ascii=False) + "\n"
         print('\n\n----------\n\n')
 
     # Alert LLM
@@ -161,7 +164,8 @@ def response_generator(img, lat, lon):
             agency_res = "No agency data"
 
         print(agency_res)
-        yield agency_res
+        yield json.dumps({"type": "alert", "data": agency_res},
+                     ensure_ascii=False) + "\n"
 
     
     except Exception as e:
