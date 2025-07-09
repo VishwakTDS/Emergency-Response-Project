@@ -133,10 +133,13 @@ def response_generator(img, lat, lon):
 
     try:
     # Cause Prediction LLM
-        cause_prediction_llm_output = cause_prediction_LLM(documents, cause_prediction_llm_model, image_summary, weather_api_data.strip())
+        cause_prediction_llm_buffer = []
+        for tok in cause_prediction_LLM(documents, cause_prediction_llm_model, image_summary, weather_api_data.strip()):
+            cause_prediction_llm_buffer.append(tok)
+            yield tok
+        cause_prediction_llm_output = "".join(cause_prediction_llm_buffer)
         print("Cause prediction LLM:")
         print(cause_prediction_llm_output)
-        yield cause_prediction_llm_output
         print('\n\n----------\n\n')
 
     # Insights LLM
@@ -159,8 +162,6 @@ def response_generator(img, lat, lon):
 
         print(agency_res)
         yield agency_res
-
-        # return cause_prediction_llm_output, insights_agent_output_json, agency_res
 
     
     except Exception as e:

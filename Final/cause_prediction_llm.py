@@ -6,7 +6,7 @@ from langchain_nvidia_ai_endpoints import ChatNVIDIA
 
 def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, api_data=None):
     try:
-        llm = ChatNVIDIA(model=cause_prediction_llm_model)
+        llm = ChatNVIDIA(model=cause_prediction_llm_model, streaming=True)
 
         prompt = ChatPromptTemplate.from_messages(
             [
@@ -24,15 +24,14 @@ def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, api_da
 
         chain = prompt | llm | StrOutputParser()
 
-        result_text = chain.invoke(
+        for chunk in chain.stream(
             {
                 "context":  top2,
                 "question": image_summary,
-                "api_data" : api_data
+                "api_data": api_data,
             }
-        )
-
-        return result_text
+        ):
+            yield chunk
     
     except Exception as e:
         err = "Disruption occured during CAUSE PREDICTION AGENT runtime"

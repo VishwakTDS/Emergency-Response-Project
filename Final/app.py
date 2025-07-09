@@ -1,6 +1,7 @@
 from master import input_processing, response_generator
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify, Response, stream_with_context
 from flask_cors import CORS
+import json
 
 
 app = Flask(__name__)
@@ -13,10 +14,22 @@ def receive_data():
 
         # Generate response plan
         def generate():
-            for output in response_generator(media_input, latitude, longitude):
-                yield f"{output}\n\n"
+            for chunk in response_generator(media_input, latitude, longitude):
+                if isinstance(chunk, (dict, list)):
+                    chunk = json.dumps(chunk, ensure_ascii=False)
+                else:
+                    chunk = str(chunk)
 
-        return Response(generate(), mimetype='text/event-stream')
+                yield chunk
+
+        return Response(
+            stream_with_context(generate()),
+            content_type="text/event-stream; charset=utf-8",
+            headers={
+                "Cache-Control": "no-cache",
+                "X-Accel-Buffering": "no"
+    }
+)
 
     except Exception as e:
         err = "Internal server error encountered"
