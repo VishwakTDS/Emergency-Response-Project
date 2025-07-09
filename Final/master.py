@@ -103,10 +103,6 @@ def response_generator(img, lat, lon):
     print(image_summary)
     print('\n\n----------\n\n')
 
-    #################################################
-    ########## Hardcoded Now, change Later ########## 
-    #################################################
-
     # calling weather API
     current_weather_json = current_weather(lat,lon)
     hourly_weather_json = hourly_weather(lat,lon)
@@ -137,7 +133,11 @@ def response_generator(img, lat, lon):
 
     try:
     # Cause Prediction LLM
-        cause_prediction_llm_output = cause_prediction_LLM(documents, cause_prediction_llm_model, image_summary, api_key_nvd, weather_api_data.strip())
+        cause_prediction_llm_buffer = []
+        for tok in cause_prediction_LLM(documents, cause_prediction_llm_model, image_summary, api_key_nvd, weather_api_data.strip()):
+            cause_prediction_llm_buffer.append(tok)
+            yield tok
+        cause_prediction_llm_output = "".join(cause_prediction_llm_buffer)
         print("\n\nCause prediction LLM:")
         print(cause_prediction_llm_output)
         print('\n\n----------\n\n')
@@ -146,20 +146,22 @@ def response_generator(img, lat, lon):
         insights_agent_output_json = insights_agent(image_summary, weather_api_data.strip(), insights_agents_model, cause_prediction_llm_output, api_key_nvd)
         print("\n\nInsights LLM:")
         print(insights_agent_output_json)
+        yield insights_agent_output_json
         print('\n\n----------\n\n')
 
     # Alert LLM
         agencies = insights_agent_output_json.get("agency","")
         messages = insights_agent_output_json.get("messages","")
 
-        agency_res = []
+        print("Alert LLM:")
 
         if agencies:
             agency_res = dispatch_to_responders(agencies, messages)
         else:
-            agency_res = ["No agency data"]
+            agency_res = "No agency data"
 
-        # return cause_prediction_llm_output, insights_agent_output_json, agency_res
+        print(agency_res)
+        yield agency_res
 
     
     except Exception as e:

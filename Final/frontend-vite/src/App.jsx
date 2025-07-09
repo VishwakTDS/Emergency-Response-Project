@@ -1,13 +1,17 @@
 import React, { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 function App() {
   const [file, setFile] = useState(null);
   const [lat, setLat] = useState("");
   const [lon, setLon] = useState("");
-  const [response, setResponse] = useState(null);
+  const [responses, setResponses] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setResponses("");
 
     if (!file || !lat || !lon) {
       alert("Please fill out all fields.");
@@ -25,13 +29,17 @@ function App() {
         body: formData,
       });
 
-      const result = await res.json();
-      setResponse(result);
-      console.log(result);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        setResponses(prev => prev + chunk);
+      }
     } catch (err) {
       console.error("Error submitting form", err);
-      setResponse({ error: "Submission failed." });
-
+      setResponses("**Submission failed.**");
     }
   };
 
@@ -57,10 +65,11 @@ function App() {
         <br /><br />
         <button type="submit">Submit</button>
       </form>
-      {response && (
+      {responses && (
         <div style={{ marginTop: "2rem" }}>
-          <h3>Server Response:</h3>
-          <pre>{JSON.stringify(response, null, 2)}</pre>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {responses}
+          </ReactMarkdown>
         </div>
       )}
     </div>
