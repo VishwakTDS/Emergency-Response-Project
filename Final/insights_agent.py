@@ -17,7 +17,6 @@ def agent2_llama(messages,insights_agents_model, api_key_n):
         max_tokens=4096,
         frequency_penalty=0,
         presence_penalty=0,
-        stream=True
     )
     return res.choices[0].message.content
 
