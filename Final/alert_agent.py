@@ -19,27 +19,22 @@ def dispatch_to_responders(agencies, messages):
         "Utility Crews": default_url
     }
 
-    result = {
-        "responders" : agencies.split("|")
-    }
+    responders = [r.strip() for r in agencies.split("|") if r.strip()]
+    if not responders:
+        return {"error": "no valid responders"}
 
-    if not result or "responders" not in result:
-        resp = f"No valid 'responders' field in result."
-        print(resp)
-        return resp
-    
-    final_response = ""
+    results = []
 
-    for responder in result["responders"]:
+    for responder in responders:
         url = responder_urls.get(responder, default_url)
 
         payload = {
             "responder": responder,
-            "message": messages
+            "message": messages,
+            "url": url
         }
 
-        final_response += f"\n Sending alert to {responder} → {url}"
-        final_response += "Payload:\n"+ json.dumps(payload, indent=2)
+        results.append(payload)
 
         try:
             response = requests.post(url, json=payload)
@@ -51,5 +46,5 @@ def dispatch_to_responders(agencies, messages):
             err = f" Unable to send request to {responder}"
             print(f"error: {err}\n{e}")
 
-    return final_response
+    return {"alerts": results}
         
