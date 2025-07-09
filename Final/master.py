@@ -137,14 +137,14 @@ def response_generator(img, lat, lon):
 
     try:
     # Cause Prediction LLM
-        cause_prediction_llm_output = cause_prediction_LLM(documents, cause_prediction_llm_model, image_summary, weather_api_data.strip())
-        print("Cause prediction LLM:")
+        cause_prediction_llm_output = cause_prediction_LLM(documents, cause_prediction_llm_model, image_summary, api_key_nvd, weather_api_data.strip())
+        print("\n\nCause prediction LLM:")
         print(cause_prediction_llm_output)
         print('\n\n----------\n\n')
 
     # Insights LLM
         insights_agent_output_json = insights_agent(image_summary, weather_api_data.strip(), insights_agents_model, cause_prediction_llm_output, api_key_nvd)
-        print("Insights LLM:")
+        print("\n\nInsights LLM:")
         print(insights_agent_output_json)
         print('\n\n----------\n\n')
 
