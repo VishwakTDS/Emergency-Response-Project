@@ -10,26 +10,39 @@ import numpy as np
 
 def image_summarizer(uploaded_file, api_key):
     vila_prompt = """
-    Analyze this image and provide a detailed summary focusing on elements relevant to incident assessment and response. The summary should include:
-    Scene Description & Environment: Describe the overall environment (e.g., urban, rural, industrial, natural landscape), the visible terrain, and any significant features like structures, vehicles, or natural elements. Note the time of day or lighting conditions.
-    Incident Characteristics: Identify the type of incident (e.g., accident, hazard, natural disaster, security event). Describe its apparent scale, severity, and any visible progression or impact.
-    Visible Entities & Activities: List any people, vehicles, equipment, or other relevant objects present in the image. Describe their roles or activities, if discernible (e.g., responders, victims, bystanders, operational tasks).
-    Hazards, Risks & Damage: Detail any immediate or potential hazards (e.g., smoke, debris, spills, instability, exposed elements) and any visible damage to property, infrastructure, or the environment.
-    Contextual Clues: Point out any signs, markings, or other visual cues that provide additional context about the incident (e.g., license plates, company logos, warning signs, weather indicators).
-    Inferred Urgency & Priority: Based on the visual evidence, infer the immediate urgency of the situation and suggest potential priorities for response (e.g., life safety, containment, damage control).
-    Key Elements (Concise List): Provide a brief, bulleted list of the most critical elements identified that define the situation.
+    You are an Image Summarizer Agent for an Emergency Response System.
+    
+    You will be provided with an image by the user.
+    Your objective is to analyze the provided image and provide a detailed summary focusing on elements relevant to incident assessment and response.
+
+    The summary should include:
+    - Scene Description and Environment: Describe the overall environment (e.g., urban, rural, industrial, natural landscape), the visible terrain, and any significant features like structures, vehicles, or natural elements. Note the time of day or lighting conditions.
+    - Incident Characteristics: Identify the type of incident (e.g., accident, hazard, natural disaster, security event). Describe its apparent scale, severity, and any visible progression or impact.
+    - Visible Entities and Activities: List any people, vehicles, equipment, or other relevant objects present in the image. Describe their roles or activities, if discernible (e.g., responders, victims, bystanders, operational tasks).
+    - Hazards, Risks & Damage: Detail any immediate or potential hazards (e.g., smoke, debris, spills, instability, exposed elements) and any visible damage to property, infrastructure, or the environment.
+    - Contextual Clues: Point out any signs, markings, or other visual cues that provide additional context about the incident (e.g., license plates, company logos, warning signs, weather indicators).
+    - Inferred Urgency & Priority: Based on the visual evidence, infer the immediate urgency of the situation and suggest potential priorities for response (e.g., life safety, containment, damage control).
+    - Key Elements (Concise List): Provide a brief, bulleted list of the most critical elements identified that define the situation.
+    
     The summary should be objective, descriptive, and focus on providing concrete observations that would inform a rapid response or further investigation.
-    Also generate the probablity/confidence of threat.
+    
+    Once you have completely assesed the image, use all the context you have to generate a probability.
+    The probability is supposed to indicate how strongly you think the image you received depicts a threat or an emergency situation.
     Give the answer in json format, no extra information.
 
-    NUMERIC FORMAT ‒ Probabilities must be written with **two decimals** (e.g. 0.03, 0.58, 0.97).   ‒ Avoid rounding everything to extremes like 0.00 or 1.00 unless highly certain.
-    Keep image summary under 200 words.
-    **OUTPUT/JSON FORMAT**:
+    NUMERIC FORMAT:
+    - Probabilities must be written with ONLY two decimals (e.g. 0.03, 0.58, 0.97, 0.40).
+    - Avoid rounding everything to extremes like 0.00 or 1.00 unless highly certain.
+
+    Keep the image summary under 400 words.
+
+    OUTPUT FORMAT IN JSON:
     {
         "image_summary":[summary of image]
-        "probablity":[probablity/confidence of the threat]
+        "probablity":[probablity/confidence that the input depicts an emergency/threat]
     } 
-    """
+
+    """.strip()
     
     media_samples = [uploaded_file]
 
