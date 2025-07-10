@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import './App.css'
+
 
 function App() {
   const [file, setFile] = useState(null);
@@ -74,52 +76,74 @@ function App() {
   };
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "500px", margin: "auto" }}>
-      <h2>Emergency Incident Upload</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-        <br /><br />
-        <input
-          type="text"
-          placeholder="Latitude"
-          value={lat}
-          onChange={(e) => setLat(e.target.value)}
-        />
-        <br /><br />
-        <input
-          type="text"
-          placeholder="Longitude"
-          value={lon}
-          onChange={(e) => setLon(e.target.value)}
-        />
-        <br /><br />
-        <button type="submit">Submit</button>
-      </form>
-      {causeText && (
-        <div style={{ marginTop: "2rem" }}>
-          <h3>Cause prediction</h3>
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{causeText}</ReactMarkdown>
-        </div>
-      )}
+    <>
+      <div className="parentdiv">
 
-      {insights && (
-        <div style={{ marginTop: "2rem" }}>
-          <h3>Insights</h3>
-          <pre style={{ whiteSpace: "pre-wrap" }}>
-            {JSON.stringify(insights, null, 2)}
-          </pre>
-        </div>
-      )}
+        <div className="inputform-map">
 
-      {alertText && (
-        <div style={{ marginTop: "2rem" }}>
-          <h3>Alert</h3>
-          <pre style={{ whiteSpace: "pre-wrap" }}>
-            {JSON.stringify(alertText, null, 2)}
-          </pre>
+          <div className="onlyform">
+            <h2>Emergency Incident Upload</h2>
+            <form onSubmit={handleSubmit}>
+              <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+              <br /><br />
+              <input
+                type="text"
+                placeholder="Latitude"
+                value={lat}
+                onChange={(e) => setLat(e.target.value)}
+              />
+              <br /><br />
+              <input
+                type="text"
+                placeholder="Longitude"
+                value={lon}
+                onChange={(e) => setLon(e.target.value)}
+              />
+              <br /><br />
+              <button type="submit">Submit</button>
+            </form>
+          </div>
+
+          <div className="map-style">
+            {/* <Map newlat={lat} newlon={lon}/> */}
+          </div>
         </div>
-      )}
-    </div>
+
+        <div className="responsebox">
+
+          <div className="textreply">
+            {causeText && (
+              <div>
+                <h3>Cause prediction</h3>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{causeText}</ReactMarkdown>
+              </div>
+            )}
+
+            {insights && (
+              <div style={{ marginTop: "2rem" }}>
+                <h3>Insights</h3>
+                <pre style={{ whiteSpace: "pre-wrap" }}>
+                  {JSON.stringify(insights, null, 2)}
+                </pre>
+              </div>
+            )}
+
+            {alertText && (
+              <div style={{ marginTop: "2rem" }}>
+                <h3>Alert</h3>
+                <pre style={{ whiteSpace: "pre-wrap" }}>
+                  {JSON.stringify(alertText, null, 2)}
+                </pre>
+              </div>
+            )}
+          </div>
+          <div className="loadingbar">
+
+          </div>
+        </div>
+
+      </div>
+    </>
   );
 }
 
