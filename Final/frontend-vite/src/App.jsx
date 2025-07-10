@@ -17,6 +17,9 @@ function App() {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const prettify = s =>
+    s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -141,18 +144,24 @@ function App() {
             {insights && (
               <div style={{ marginTop: "2rem" }}>
                 <h3>Insights</h3>
-                <pre style={{ whiteSpace: "pre-wrap" }}>
-                  {JSON.stringify(insights, null, 2)}
-                </pre>
+                <div className="insights-output-action"><strong>Action:</strong> {prettify(insights.action)}</div>
+                <div className="insights-output-agency"><strong>Agency:</strong> {prettify(insights.agency)}</div>
+                <div className="insights-output-lat-lon"><strong>Coordinates:</strong> {insights.lat}, {insights.lon}</div>
+                <div className="insights-output-messages"><strong>Messages:</strong> {insights.messages}</div>
               </div>
             )}
 
             {alertText && (
               <div style={{ marginTop: "2rem" }}>
                 <h3>Alert</h3>
-                <pre style={{ whiteSpace: "pre-wrap" }}>
-                  {JSON.stringify(alertText, null, 2)}
-                </pre>
+                <div className="alert-output-responder">
+                  <strong>Responder: </strong>
+                  <span>
+                    {alertText.alerts.map(alert => (
+                      prettify(alert.responder)
+                    )).join(', ')}
+                  </span>
+                </div>
               </div>
             )}
           </div>
