@@ -144,10 +144,18 @@ function App() {
             {insights && (
               <div style={{ marginTop: "2rem" }}>
                 <h3>Insights</h3>
-                <div className="insights-output-action"><strong>Action:</strong> {prettify(insights.action)}</div>
-                <div className="insights-output-agency"><strong>Agency:</strong> {prettify(insights.agency)}</div>
-                <div className="insights-output-lat-lon"><strong>Coordinates:</strong> {insights.lat}, {insights.lon}</div>
-                <div className="insights-output-messages"><strong>Messages:</strong> {insights.messages}</div>
+                {insights.action && (
+                  <div className="insights-output-action"><strong>Action:</strong> {prettify(insights.action)}</div>
+                )}
+                {insights.agency && (
+                  <div className="insights-output-agency"><strong>Agency:</strong> {prettify(insights.agency)}</div>
+                )}
+                {(insights.lat != null && insights.lon != null) && (
+                  <div className="insights-output-lat-lon"><strong>Coordinates:</strong> {insights.lat}, {insights.lon}</div>
+                )}
+                {insights.messages && (
+                  <div className="insights-output-messages"><strong>Messages:</strong> {insights.messages}</div>
+                )}
               </div>
             )}
 
