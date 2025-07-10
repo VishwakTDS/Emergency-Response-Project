@@ -54,7 +54,7 @@ def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, api_ke
 
         Your job is to use the all context you are provided with and generate a summary about the current situation depicted in the image using the information provided by the similar events.
         The summary should be objective, descriptive, and focus on providing concrete observations that would inform a rapid response or further investigation.
-        Keep the response under 300 words.
+        Keep the response under 400 words.
 
         ##############################
         ## Forbidden behavior    ##

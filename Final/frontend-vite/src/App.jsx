@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 import './App.css'
 
 
@@ -12,6 +14,8 @@ function App() {
   const [causeText,  setCauseText]  = useState("");
   const [insights,   setInsights]   = useState(null);
   const [alertText,  setAlertText]  = useState(null);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,6 +32,9 @@ function App() {
     formData.append("latitude", lat);
     formData.append("longitude", lon);
 
+
+    setIsLoading(true);
+
     try {
       const res = await fetch("http://127.0.0.1:5000/response/v1", {
         method: "POST",
@@ -38,6 +45,8 @@ function App() {
       const decoder = new TextDecoder("utf-8");
 
       let buffer = "";
+      let gotFirstChunk = false;
+
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -53,6 +62,11 @@ function App() {
           let obj;
           try        { obj = JSON.parse(line); } 
           catch (e)  { console.error("Bad JSON line:", line); continue; }
+          
+          if (!gotFirstChunk) {
+            gotFirstChunk = true;
+            setIsLoading(false);
+          }
 
           switch (obj.type) {
             case "cause_prediction":
@@ -72,6 +86,7 @@ function App() {
     } catch (err) {
       console.error("Error submitting form", err);
       setResponses("**Submission failed.**");
+      setIsLoading(false);
     }
   };
 
@@ -84,11 +99,14 @@ function App() {
           <div className="onlyform">
             <h2>Emergency Incident Upload</h2>
             <form onSubmit={handleSubmit}>
-              <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+              <label htmlFor="formId">
+                <input id="formId" type="file" onChange={(e) => setFile(e.target.files[0])} />
+              </label>
               <br /><br />
               <input
                 type="text"
                 placeholder="Latitude"
+                className="input-field"
                 value={lat}
                 onChange={(e) => setLat(e.target.value)}
               />
@@ -96,11 +114,12 @@ function App() {
               <input
                 type="text"
                 placeholder="Longitude"
+                className="input-field"
                 value={lon}
                 onChange={(e) => setLon(e.target.value)}
               />
               <br /><br />
-              <button type="submit">Submit</button>
+              <button type="submit" className="submit-button">Submit</button>
             </form>
           </div>
 
@@ -138,7 +157,18 @@ function App() {
             )}
           </div>
           <div className="loadingbar">
-
+            {isLoading && (
+              <Box 
+              sx={{ 
+                display: 'flex',
+                justifyContent: "center",
+                alignItems: "center",
+                p: 2,
+                }}
+                >
+                <CircularProgress size="3em" />
+              </Box>
+            )}
           </div>
         </div>
 
