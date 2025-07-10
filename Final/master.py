@@ -137,7 +137,8 @@ def response_generator(img, lat, lon):
         cause_prediction_llm_buffer = []
         for tok in cause_prediction_LLM(documents, cause_prediction_llm_model, image_summary, api_key_nvd, weather_api_data.strip()):
             cause_prediction_llm_buffer.append(tok)
-            yield tok
+            yield json.dumps({"type": "cause_prediction", "data": tok},
+                         ensure_ascii=False) + "\n"
         cause_prediction_llm_output = "".join(cause_prediction_llm_buffer)
         print("\n\nCause prediction LLM:")
         print(cause_prediction_llm_output)
@@ -147,7 +148,9 @@ def response_generator(img, lat, lon):
         insights_llm_buffer = []
         for tok in insights_agent(image_summary, weather_api_data.strip(), insights_agents_model, cause_prediction_llm_output, api_key_nvd):
             insights_llm_buffer.append(tok)
-            yield tok
+            # yield tok
+            yield json.dumps({"type": "insights", "data": tok},
+                     ensure_ascii=False) + "\n"
         
         insights_agent_output = "".join(insights_llm_buffer)
         print("\n\nInsights LLM:")
@@ -170,7 +173,8 @@ def response_generator(img, lat, lon):
             agency_res = "No agency data"
 
         print(agency_res)
-        yield agency_res
+        yield json.dumps({"type": "alert", "data": agency_res},
+                     ensure_ascii=False) + "\n"
 
     
     except Exception as e:
