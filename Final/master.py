@@ -144,37 +144,64 @@ def response_generator(img, lat, lon):
         print(cause_prediction_llm_output)
         print('\n\n----------\n\n')
 
+
+        # insights_llm_buffer = []
+        # for tok in insights_agent(image_summary, weather_api_data.strip(), insights_agents_model, cause_prediction_llm_output, api_key_nvd):
+        #     insights_llm_buffer.append(tok)
+        #     # yield tok
+        #     yield json.dumps({"type": "insights", "data": tok},
+        #              ensure_ascii=False) + "\n"
+        
+        # insights_agent_output = "".join(insights_llm_buffer)
+        # print("\n\nInsights LLM:")
+        # # print(insights_agent_output_json)
+        # print(insights_agent_output)
+        # # yield insights_agent_output_json
+        # print('\n\n----------\n\n')
+
     # Insights LLM
-        insights_llm_buffer = []
-        for tok in insights_agent(image_summary, weather_api_data.strip(), insights_agents_model, cause_prediction_llm_output, api_key_nvd):
-            insights_llm_buffer.append(tok)
-            # yield tok
-            yield json.dumps({"type": "insights", "data": tok},
+
+        insights_agent_output_json = insights_agent(image_summary, weather_api_data.strip(), insights_agents_model, cause_prediction_llm_output, api_key_nvd)
+        
+        # insights_agent_output = "".join(insights_llm_buffer)
+        print("\n\nInsights LLM:")
+        print(insights_agent_output_json)
+
+        print("\n\n TYPE OF INSIGHTS AGENT OUTPUT\n\n")
+        print(type(insights_agent_output_json))
+
+        # for key, val in insights_agent_output_json.items():
+        #     yield json.dumps({"type": "insights", "data": f"{key} ---> {val}"}, 
+        #                      ensure_ascii=False) + "\n"
+
+        yield json.dumps({"type": "insights", "data": insights_agent_output_json},
                      ensure_ascii=False) + "\n"
         
-        insights_agent_output = "".join(insights_llm_buffer)
-        print("\n\nInsights LLM:")
-        # print(insights_agent_output_json)
-        print(insights_agent_output)
+
+        # print(insights_agent_output)
         # yield insights_agent_output_json
         print('\n\n----------\n\n')
 
     # Alert LLM
-        insights_agent_output_json = json.loads(insights_agent_output)
-        print(insights_agent_output_json)
+        # insights_agent_output_json = json.loads(insights_agent_output)
+        # print(insights_agent_output_json)
+
         agencies = insights_agent_output_json.get("agency","")
         messages = insights_agent_output_json.get("messages","")
 
         print("Alert LLM:")
 
+        agency_res = False
+
         if agencies:
             agency_res = dispatch_to_responders(agencies, messages)
-        else:
-            agency_res = "No agency data"
+        # else:
+        #     agency_res = 
 
         print(agency_res)
-        yield json.dumps({"type": "alert", "data": agency_res},
-                     ensure_ascii=False) + "\n"
+        if agency_res:
+            yield json.dumps({"type": "alert", "data": agency_res},
+                        ensure_ascii=False) + "\n"
 
     
     except Exception as e:
