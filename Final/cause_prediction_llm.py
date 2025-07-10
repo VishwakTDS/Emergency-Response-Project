@@ -19,12 +19,20 @@ def agent1_causepredict(messages, insights_agents_model, api_key_n):
         model=insights_agents_model,
         messages=messages,
         temperature=0.6,
+        # response_format={"type": "json_object"},
         top_p=0.95,
         max_tokens=4096,
         frequency_penalty=0,
         presence_penalty=0,
+        stream=True
     )
-    return res.choices[0].message.content
+    # return res.choices[0].message.content
+
+    for tok in res:
+        # print(tok.choices[0].delta.content)
+        yield tok.choices[0].delta.content
+
+    # return res.choices[0].message.content
 
 def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, api_key, api_data=None):
     try:
@@ -101,9 +109,14 @@ def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, api_ke
          "content":user_prompt}
         ]
 
-        nemo_out = agent1_causepredict(prompt, cause_prediction_llm_model, api_key)
+        # nemo_out = agent1_causepredict(prompt, cause_prediction_llm_model, api_key)
 
-        return nemo_out
+        for tok in agent1_causepredict(prompt, cause_prediction_llm_model, api_key):
+            yield tok
+
+
+
+        # return nemo_out
     
     except Exception as e:
         err = "Disruption occured during CAUSE PREDICTION AGENT runtime"

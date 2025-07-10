@@ -1,5 +1,6 @@
 import io
 import tempfile
+import json
 
 from PIL import Image
 
@@ -143,13 +144,21 @@ def response_generator(img, lat, lon):
         print('\n\n----------\n\n')
 
     # Insights LLM
-        insights_agent_output_json = insights_agent(image_summary, weather_api_data.strip(), insights_agents_model, cause_prediction_llm_output, api_key_nvd)
+        insights_llm_buffer = []
+        for tok in insights_agent(image_summary, weather_api_data.strip(), insights_agents_model, cause_prediction_llm_output, api_key_nvd):
+            insights_llm_buffer.append(tok)
+            yield tok
+        
+        insights_agent_output = "".join(insights_llm_buffer)
         print("\n\nInsights LLM:")
-        print(insights_agent_output_json)
-        yield insights_agent_output_json
+        # print(insights_agent_output_json)
+        print(insights_agent_output)
+        # yield insights_agent_output_json
         print('\n\n----------\n\n')
 
     # Alert LLM
+        insights_agent_output_json = json.loads(insights_agent_output)
+        print(insights_agent_output_json)
         agencies = insights_agent_output_json.get("agency","")
         messages = insights_agent_output_json.get("messages","")
 

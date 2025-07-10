@@ -11,14 +11,21 @@ def agent2_llama(messages,insights_agents_model, api_key_n):
     res = client.chat.completions.create(
         model=insights_agents_model,
         messages=messages,
-        response_format={"type": "json_object"},
+        # response_format={"type": "json_object"},
         temperature=0.6,
         top_p=0.95,
         max_tokens=4096,
         frequency_penalty=0,
         presence_penalty=0,
+        stream=True
     )
-    return res.choices[0].message.content
+
+    for tok in res:
+        print(tok.choices[0].delta.content)
+        # print(tok)
+        yield tok.choices[0].delta.content
+
+    # return res.choices[0].message.content
 
 def insights_agent(image_summary, api_data, insights_agents_model, curr_summary, api_key):
 #     prompt_content = """
@@ -218,14 +225,17 @@ def insights_agent(image_summary, api_data, insights_agents_model, curr_summary,
          "content":user_prompt}
     ]
 
-    nemo_out = agent2_llama(prompt, insights_agents_model, api_key)
+    # nemo_out = agent2_llama(prompt, insights_agents_model, api_key)
+
+    for tok in agent2_llama(prompt, insights_agents_model, api_key):
+        yield tok
 
     #nemo_out = nemo_out.replace("```json","").replace("```","")
 
     # try:
-    generated_json = json.loads(nemo_out)
+    # generated_json = json.loads(nemo_out)
     # except Exception as e:
     #     generated_json = agent2_llama(f"WE ARE GETTING AN ERROR: {e} FOR THIS JSON: {nemo_out} DO NOT GIVE EXTRA INFORMATION JUST GIVE JSON OUTPUT SUCH THAT I CAN DIRECTLY PASS IT TO JSON.LOADS" ,insights_agents_model)
     #     generated_json = json.loads(nemo_out)
 
-    return generated_json 
+    # return generated_json 
