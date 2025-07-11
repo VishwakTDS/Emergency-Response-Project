@@ -1,24 +1,15 @@
 import React, { useState } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
+import { useNavigate } from "react-router-dom";
 import './App.css'
 
 
-function App() {
+function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
   const [file, setFile] = useState(null);
   const [lat, setLat] = useState("");
   const [lon, setLon] = useState("");
 
-  const [causeText,  setCauseText]  = useState("");
-  const [insights,   setInsights]   = useState(null);
-  const [alertText,  setAlertText]  = useState(null);
-
-  const [isLoading, setIsLoading] = useState(false);
-
-  const prettify = s =>
-    s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,6 +20,8 @@ function App() {
       alert("Please fill out all fields.");
       return;
     }
+
+    navigate("/output");
 
     const formData = new FormData();
     formData.append("input_media", file, file.name);
@@ -88,7 +81,6 @@ function App() {
       }
     } catch (err) {
       console.error("Error submitting form", err);
-      setResponses("**Submission failed.**");
       setIsLoading(false);
     }
   };
@@ -130,65 +122,6 @@ function App() {
             {/* <Map newlat={lat} newlon={lon}/> */}
           </div>
         </div>
-
-        <div className="responsebox">
-
-          <div className="textreply">
-            {causeText && (
-              <div>
-                <h3>Cause prediction</h3>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{causeText}</ReactMarkdown>
-              </div>
-            )}
-
-            {insights && (
-              <div style={{ marginTop: "2rem" }}>
-                <h3>Insights</h3>
-                {insights.action && (
-                  <div className="insights-output-action"><strong>Action:</strong> {prettify(insights.action)}</div>
-                )}
-                {insights.agency && (
-                  <div className="insights-output-agency"><strong>Agency:</strong> {prettify(insights.agency)}</div>
-                )}
-                {(insights.lat != null && insights.lon != null) && (
-                  <div className="insights-output-lat-lon"><strong>Coordinates:</strong> {insights.lat}, {insights.lon}</div>
-                )}
-                {insights.messages && (
-                  <div className="insights-output-messages"><strong>Messages:</strong> {insights.messages}</div>
-                )}
-              </div>
-            )}
-
-            {alertText && (
-              <div style={{ marginTop: "2rem" }}>
-                <h3>Alert</h3>
-                <div className="alert-output-responder">
-                  <strong>Responder: </strong>
-                  <span>
-                    {alertText.alerts.map(alert => (
-                      prettify(alert.responder)
-                    )).join(', ')}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="loadingbar">
-            {isLoading && (
-              <Box 
-              sx={{ 
-                display: 'flex',
-                justifyContent: "center",
-                alignItems: "center",
-                p: 2,
-                }}
-                >
-                <CircularProgress size="3em" />
-              </Box>
-            )}
-          </div>
-        </div>
-
       </div>
     </>
   );
