@@ -39,7 +39,9 @@ def receive_data():
         )
     
     return jsonify({
-        "status":"success"
+        "status":"success",
+        "agent1":agent1,
+        "agent2":agent2
         }
     )
 

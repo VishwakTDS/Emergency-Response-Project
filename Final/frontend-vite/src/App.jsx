@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './App.css'
+import Map from './Map'
 
 
 function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
@@ -10,6 +11,9 @@ function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
 
   
   const navigate = useNavigate();
+
+  // let newLat = 33.338;
+  // let newLon = -111.895;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,7 +88,7 @@ function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
       setIsLoading(false);
     }
   };
-
+// style={{ padding: "2rem", maxWidth: "500px", margin: "auto" }}
   return (
     <>
       <div className="parentdiv">
