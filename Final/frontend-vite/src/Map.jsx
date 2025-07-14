@@ -7,7 +7,8 @@ const RecenterMap = ({newlat, newlon}) => {
     const map = useMap();
 
     useEffect( () => {
-        map.flyTo([newlat, newlon], map.getZoom());
+        // map.flyTo([newlat, newlon], map.getZoom());
+        map.setView([newlat, newlon], map.getZoom());
     })
     return null;
 }
