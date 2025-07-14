@@ -4,10 +4,10 @@ import './App.css'
 import Map from './Map'
 
 
-function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
+function App({setCauseText, setInsights, setAlertText, setIsLoading, setLat, setLon, lat, lon}) {
   const [file, setFile] = useState(null);
-  const [lat, setLat] = useState("");
-  const [lon, setLon] = useState("");
+  // const [lat, setLat] = useState("");
+  // const [lon, setLon] = useState("");
 
   
   const navigate = useNavigate();
@@ -120,10 +120,6 @@ function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
               <br /><br />
               <button type="submit" className="submit-button">Submit</button>
             </form>
-          </div>
-
-          <div className="map-style">
-            {/* <Map newlat={lat} newlon={lon}/> */}
           </div>
         </div>
       </div>

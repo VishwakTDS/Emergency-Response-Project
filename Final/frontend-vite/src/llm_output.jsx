@@ -5,6 +5,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
 import './llm_output.css'
+import Map from './Map'
 
 const prettify = s =>
         s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -17,7 +18,10 @@ function BackButton() {
   );
 }
 
-const LLM_Output = ({ causeText, insights, alertText, isLoading }) => {
+const LLM_Output = ({ causeText, insights, alertText, isLoading, lat, lon }) => {
+    console.log("Printing from llm_output.jsx");
+    console.log("Pringing lat and longitude inside output.jsx:", lat, lon)
+    // console.log("Pringing ints of lat and longitude output.jsx:", intlat, intlon)
     return (
         <div className="llm-response-window">
             <div className="responsebox">
@@ -88,6 +92,9 @@ const LLM_Output = ({ causeText, insights, alertText, isLoading }) => {
                     </div>
                 </div>
             </div>
+            <div className="map-style">
+                <Map lat={lat} long={lon}/>
+          </div>
         </div>
     );
 };

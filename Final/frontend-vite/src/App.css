@@ -85,12 +85,6 @@
   min-width: 100vw;
 }
 
-.mapstyle {
-  height: 400px;
-  width: 100%;
-  max-width: 600px;
-}
-
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);

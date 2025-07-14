@@ -3,17 +3,17 @@ import "leaflet/dist/leaflet.css"
 import './App.css'
 import { useEffect } from 'react';
 
-const RecenterMap = ({newlat, newlon}) => {
-    const map = useMap();
+// const RecenterMap = ({newlat, newlon}) => {
+//     const map = useMap();
 
-    useEffect( () => {
-        // map.flyTo([newlat, newlon], map.getZoom());
-        map.setView([newlat, newlon], map.getZoom());
-    })
-    return null;
-}
+//     useEffect( () => {
+//         // map.flyTo([newlat, newlon], map.getZoom());
+//         map.setView([newlat, newlon], map.getZoom());
+//     })
+//     return null;
+// }
 
-const Map = ({lat = '0', long = '0'}) => {
+const Map = ({lat, long}) => {
     
     // let intlat = lat ? 0 : Number(lat);
     // let intlon = long ? 0 : Number(long);
@@ -21,6 +21,9 @@ const Map = ({lat = '0', long = '0'}) => {
     console.log(typeof long)
     let intlat = lat ? parseFloat(lat) : 33.338;
     let intlon = long ? parseFloat(long) : -111.895;
+
+    // let intlat = lat;
+    // let intlon = long;
 
 
 
@@ -38,7 +41,7 @@ const Map = ({lat = '0', long = '0'}) => {
                     A pretty CSS3 popup. <br /> Easily customizable.
                 </Popup>
             </Marker>
-            <RecenterMap newlat={intlat} newlon={intlon} />
+            {/* <RecenterMap newlat={intlat} newlon={intlon} /> */}
         </MapContainer>
     )
 }

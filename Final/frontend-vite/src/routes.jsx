@@ -14,6 +14,9 @@ function Routing() {
 
     const [isLoading, setIsLoading] = useState(false);
 
+    const [lat, setLat] = useState("");
+    const [lon, setLon] = useState("");
+
     return (
         <Router>
             <Routes>
@@ -24,7 +27,11 @@ function Routing() {
                             setCauseText={setCauseText}
                             setInsights={setInsights}
                             setAlertText={setAlertText}
-                            setIsLoading={setIsLoading} 
+                            setIsLoading={setIsLoading}
+                            setLat={setLat}
+                            setLon={setLon}
+                            lat={lat}
+                            lon={lon}
                         />
                     } 
                 />
@@ -36,6 +43,8 @@ function Routing() {
                             insights={insights}
                             alertText={alertText}
                             isLoading={isLoading}
+                            lat={lat}
+                            lon={lon}
                         />
                     } 
                 />
