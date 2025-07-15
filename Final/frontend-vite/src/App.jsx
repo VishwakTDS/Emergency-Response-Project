@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './App.css'
-
+import Spline from '@splinetool/react-spline';
 
 function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
   const [file, setFile] = useState(null);
@@ -86,45 +86,58 @@ function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
   };
 
   return (
-    <>
-      <div className="parentdiv">
-
-        <div className="inputform-map">
-
-          <div className="onlyform">
-            <h2>Emergency Incident Upload</h2>
-            <form onSubmit={handleSubmit}>
-              <label htmlFor="formId">
-                <input id="formId" type="file" onChange={(e) => setFile(e.target.files[0])} />
-              </label>
-              <br /><br />
-              <input
-                type="text"
-                placeholder="Latitude"
-                className="input-field"
-                value={lat}
-                onChange={(e) => setLat(e.target.value)}
-              />
-              <br /><br />
-              <input
-                type="text"
-                placeholder="Longitude"
-                className="input-field"
-                value={lon}
-                onChange={(e) => setLon(e.target.value)}
-              />
-              <br /><br />
-              <button type="submit" className="submit-button">Submit</button>
-            </form>
-          </div>
-
-          <div className="map-style">
-            {/* <Map newlat={lat} newlon={lon}/> */}
+    <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
+      {/* Left: Your existing UI */}
+      <div style={{ flex: '0 0 500px', background: '#f5f5f5', padding: '2rem', minWidth: 350 }}>
+        <div className="parentdiv">
+          <div className="inputform-map">
+            <div className="onlyform">
+              <h2>Emergency Incident Upload</h2>
+              <form onSubmit={handleSubmit}>
+                <label htmlFor="formId">
+                  <input id="formId" type="file" onChange={(e) => setFile(e.target.files[0])} />
+                </label>
+                <br /><br />
+                <input
+                  type="text"
+                  placeholder="Latitude"
+                  className="input-field"
+                  value={lat}
+                  onChange={(e) => setLat(e.target.value)}
+                />
+                <br /><br />
+                <input
+                  type="text"
+                  placeholder="Longitude"
+                  className="input-field"
+                  value={lon}
+                  onChange={(e) => setLon(e.target.value)}
+                />
+                <br /><br />
+                <button type="submit" className="submit-button">Submit</button>
+              </form>
+            </div>
+            <div className="map-style">
+              {/* <Map newlat={lat} newlon={lon}/> */}
+            </div>
           </div>
         </div>
       </div>
-    </>
+      {/* Right: Spline 3D scene */}
+      <div style={{
+        flex: 1,
+        background: '#fff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        paddingRight: '2rem'
+      }}>
+        <div style={{ width: '100%', maxWidth: 900, minWidth: 400, height: '80vh' }}>
+          <Spline scene="https://prod.spline.design/hPDmp6Uyg3XbitYg/scene.splinecode" style={{ width: '100%', height: '100%' }} />
+        </div>
+      </div>
+    </div>
   );
 }
-
 export default App;
+
