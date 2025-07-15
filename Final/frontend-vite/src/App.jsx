@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './App.css'
 import Spline from '@splinetool/react-spline';
+import GlobeComponent from './GlobeComponent';
 
 function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
   const [file, setFile] = useState(null);
@@ -133,7 +134,7 @@ function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
         paddingRight: '2rem'
       }}>
         <div style={{ width: '100%', maxWidth: 900, minWidth: 400, height: '80vh' }}>
-          <Spline scene="https://prod.spline.design/hPDmp6Uyg3XbitYg/scene.splinecode" style={{ width: '100%', height: '100%' }} />
+          <GlobeComponent lat={lat} lon={lon} />
         </div>
       </div>
     </div>

@@ -16,10 +16,13 @@
     "@splinetool/react-spline": "^4.1.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-globe.gl": "^2.34.0",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.6.3",
     "remark-breaks": "^4.0.0",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "three": "^0.178.0",
+    "three-globe": "^2.43.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
