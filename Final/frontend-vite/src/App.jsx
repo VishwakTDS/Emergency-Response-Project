@@ -89,7 +89,7 @@ function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
       {/* Left: Your existing UI */}
-      <div style={{ flex: '0 0 500px', background: '#f5f5f5', padding: '2rem', minWidth: 350 }}>
+      <div style={{ flex: '0 0 220px', background: '#f5f5f5', padding: '2rem', minWidth: 150 }}>
         <div className="parentdiv">
           <div className="inputform-map">
             <div className="onlyform">
@@ -124,16 +124,20 @@ function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
           </div>
         </div>
       </div>
-      {/* Right: Spline 3D scene */}
-      <div style={{
-        flex: 1,
-        background: '#fff',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        paddingRight: '2rem'
-      }}>
-        <div style={{ width: '100%', maxWidth: 900, minWidth: 400, height: '80vh' }}>
+      {/* Right: Globe */}
+      <div
+        style={{
+          flex: 1,
+          background: '#fff',
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'flex-start',
+          minHeight: '100vh',
+          paddingTop: '2rem',
+          paddingLeft: 0 // No left padding
+        }}
+      >
+        <div style={{ width: 350, height: 350, marginLeft: '-40px' }}>
           <GlobeComponent lat={lat} lon={lon} />
         </div>
       </div>
