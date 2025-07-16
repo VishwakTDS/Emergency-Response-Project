@@ -83,7 +83,6 @@ html, body, #root {
 .left-dashboard::-webkit-scrollbar-track { background: transparent; }
 
 /* Popup Message */
-/* Container  -----------------------------------------------------*/
 .popup-message {
   width: 80%;
   /* max-width: 420px; */
@@ -101,11 +100,9 @@ html, body, #root {
   box-shadow: 0 4px 10px rgba(0,0,0,.15);
 }
 
-/* “Safe / Not-safe” color strip  --------------------------------*/
 .popup-message.green { color: #1e8e3e; }   /* safe   */
 .popup-message.red   { color: #d93025; }   /* alert  */
 
-/* Header line  ---------------------------------------------------*/
 .popup-header {
   display: flex;
   justify-content: space-between;
@@ -113,19 +110,30 @@ html, body, #root {
   font-weight: 600;
 }
 
-/* The little “i” icon  ------------------------------------------*/
+/* Info Icon */
 .info-icon {
   cursor: pointer;
   display: inline-flex;
+  width: 1.25rem;
+  height: 1.2rem;
   padding: 4px;
   border-radius: 3px;
   transition: background .15s;
 }
+
+.info-icon circle {
+  fill: #3498db;
+}
+
+.info-icon text {
+  fill: white;
+}
+
 .info-icon:hover {
   background: rgba(0,0,0,.05);
 }
+/* Info Icon End */
 
-/* Extra info  ----------------------------------------------------*/
 .popup-more-info {
   /* collapsed by default */
   max-height: 0;
@@ -136,10 +144,8 @@ html, body, #root {
   margin-top: 4px;
 }
 
-/* When the component has the “expanded” class
-   (added by React) we reveal the content            */
 .popup-message.expanded .popup-more-info {
-  max-height: 400px;  /* any value larger than expected content */
+  max-height: 400px; 
 }
 /* End of Popup Message */
 

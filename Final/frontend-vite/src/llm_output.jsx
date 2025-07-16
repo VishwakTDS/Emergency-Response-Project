@@ -26,8 +26,8 @@ const InfoIcon = () => (
     viewBox="0 0 20 20"
     fill="none"
   >
-    <circle cx="10" cy="10" r="10" fill="#3498db" />
-    <text x="10" y="15" textAnchor="middle" fontSize="14" fill="#fff" fontWeight="bold">i</text>
+    <circle cx="10" cy="10" r="10" />
+    <text x="10" y="15" textAnchor="middle" fontSize="14" fontWeight="bold">i</text>
   </svg>
 );
 
