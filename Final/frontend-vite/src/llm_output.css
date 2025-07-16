@@ -1,32 +1,58 @@
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  font-family: system-ui, sans-serif;
+  color: black;
+}
+
 .llm-response-window {
-  height: 100vh;
-  width: 100vw;
-  overflow-y: auto;
-  background-color: lightgray;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
 }
 
 .responsebox {
-    padding: 2rem;
+  flex: 1 1 auto;
+  display: flex;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
-.textreply {
+.back-button {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+}
+
+.left-dashboard {
+  width: 45vw;
+  height: 100%;
+  overflow-y: auto;
+  padding: 3rem 2rem;
+  box-sizing: border-box;
+  background: #fafafa;
+}
+
+.right-dashboard {
+  width: 55vw;
+  height: 100%;
+  box-sizing: border-box;
+  /* padding: 1rem; */
+  gap: 2rem;
+  background: #e9ecef;
+  border-left: 1px solid #c8c8c8;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin: 0 10rem;
-  padding: 0 2rem;
-  box-sizing: border-box;
-  color: #1a1a1a;
-
-  background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); 
-  border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0,0,0,0.05);
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
 
 .loadingbar {
-  display: fixed;
+  display: flex;
   /* border: 1px solid red; */
   /* padding: 5em; */
   /* margin-left: 30vw; */
@@ -36,7 +62,83 @@
 }
 
 .mapstyle {
-  height: 400px;
+  height: 100%;
   width: 100%;
-  max-width: 600px;
+  /* margin: 0; */
+  /* max-width: 600px; */
+  /* min-width: 400px; */
 }
+
+.map-style {
+  height: 65%;
+  width: 100%;
+  margin: 0;
+  /* max-width: 600px; */
+  /* min-width: 400px; */
+}
+
+/* Slim scroll bar */
+.left-dashboard::-webkit-scrollbar       { width: 8px; }
+.left-dashboard::-webkit-scrollbar-thumb { background: rgba(0,0,0,.35); border-radius: 4px; }
+.left-dashboard::-webkit-scrollbar-track { background: transparent; }
+
+/* Popup Message */
+/* Container  -----------------------------------------------------*/
+.popup-message {
+  width: 80%;
+  /* max-width: 420px; */
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem;
+  border-left: 5px solid currentColor;
+  border-radius: 4px;
+  background: #fff;
+  color: #333;
+  box-shadow: 0 2px 6px rgba(0,0,0,.1);
+  transition: box-shadow .2s;
+}
+
+.popup-message:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+}
+
+/* “Safe / Not-safe” color strip  --------------------------------*/
+.popup-message.green { color: #1e8e3e; }   /* safe   */
+.popup-message.red   { color: #d93025; }   /* alert  */
+
+/* Header line  ---------------------------------------------------*/
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+}
+
+/* The little “i” icon  ------------------------------------------*/
+.info-icon {
+  cursor: pointer;
+  display: inline-flex;
+  padding: 4px;
+  border-radius: 3px;
+  transition: background .15s;
+}
+.info-icon:hover {
+  background: rgba(0,0,0,.05);
+}
+
+/* Extra info  ----------------------------------------------------*/
+.popup-more-info {
+  /* collapsed by default */
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.75s ease;
+  font-weight: 400;
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
+/* When the component has the “expanded” class
+   (added by React) we reveal the content            */
+.popup-message.expanded .popup-more-info {
+  max-height: 400px;  /* any value larger than expected content */
+}
+/* End of Popup Message */

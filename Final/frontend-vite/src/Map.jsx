@@ -1,6 +1,7 @@
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import "leaflet/dist/leaflet.css"
-import './App.css'
+// import './App.css'
+import './llm_output.css'
 import { useEffect } from 'react';
 
 // const RecenterMap = ({newlat, newlon}) => {
