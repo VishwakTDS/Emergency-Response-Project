@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import './App.css'
 import Spline from '@splinetool/react-spline';
 import GlobeComponent from './GlobeComponent';
+import FuturisticGlobe from './FuturisticGlobe';
 
 function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
   const [file, setFile] = useState(null);
@@ -87,9 +88,27 @@ function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
   };
 
   return (
-    <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
-      {/* Left: Your existing UI */}
-      <div style={{ flex: '0 0 220px', background: '#f5f5f5', padding: '2rem', minWidth: 150 }}>
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '400px 1fr', // adjust 400px as needed for your form
+        height: '200vh', //  here to change length of the page 
+        width: '100vw',
+        background: 'rgb(14, 14, 14)',
+        margin: 0,
+        padding: 0,
+        boxSizing: 'border-box'
+      }}
+    >
+      {/* Left panel */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100vh'
+        }}
+      >
         <div className="parentdiv">
           <div className="inputform-map">
             <div className="onlyform">
@@ -124,21 +143,17 @@ function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
           </div>
         </div>
       </div>
-      {/* Right: Globe */}
+      {/* Right panel */}
       <div
         style={{
-          flex: 1,
-          background: '#fff',
           display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'flex-start',
-          minHeight: '100vh',
-          paddingTop: '2rem',
-          paddingLeft: 0 // No left padding
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '120vh'
         }}
       >
-        <div style={{ width: 350, height: 350, marginLeft: '-40px' }}>
-          <GlobeComponent lat={lat} lon={lon} />
+        <div style={{ width: 1000, height: 1000 }}>
+          <FuturisticGlobe lat={lat} lon={lon} />
         </div>
       </div>
     </div>
