@@ -142,3 +142,8 @@ html, body, #root {
   max-height: 400px;  /* any value larger than expected content */
 }
 /* End of Popup Message */
+
+/* Removing credit attribution tag */
+.leaflet-control-attribution, .leaflet-control-scale-line {
+  display: none;
+}
