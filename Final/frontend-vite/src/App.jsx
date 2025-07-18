@@ -94,7 +94,7 @@ function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
         gridTemplateColumns: '400px 1fr', // adjust 400px as needed for your form
         height: '200vh', //  here to change length of the page 
         width: '100vw',
-        background: 'rgb(14, 14, 14)',
+        background: 'rgb(0, 0, 0)',
         margin: 0,
         padding: 0,
         boxSizing: 'border-box'
@@ -103,6 +103,8 @@ function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
       {/* Left panel */}
       <div
         style={{
+          position: 'relative',
+          zIndex: 10, // <-- Make sure this is higher than the globe
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -148,13 +150,14 @@ function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
         style={{
           display: 'flex',
           alignItems: 'center',
+          zIndex: 1,
           justifyContent: 'center',
           height: '120vh'
         }}
       >
         <div style={{ width: 1000, height: 1000 }}>
           <FuturisticGlobe lat={lat} lon={lon} />
-        </div>
+        </div> 
       </div>
     </div>
   );

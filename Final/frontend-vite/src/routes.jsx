@@ -27,7 +27,7 @@ function Routing() {
                             setCauseText={setCauseText}
                             setInsights={setInsights}
                             setAlertText={setAlertText}
-                            setIsLoading={setIsLoading}
+                            setIsLoading={setIsLoading} 
                             setLat={setLat}
                             setLon={setLon}
                             lat={lat}
