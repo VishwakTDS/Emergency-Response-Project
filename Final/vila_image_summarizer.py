@@ -3,13 +3,15 @@ import os
 import requests
 import json
 import uuid
-
+from sql_connection import fetch_threat_info
 import pandas as pd
 import numpy as np
 
 
 def image_summarizer(uploaded_file, api_key):
-    vila_prompt = """
+    threats = fetch_threat_info()
+
+    vila_prompt = f"""
     Analyze this image and provide a detailed summary focusing on elements relevant to incident assessment and response. The summary should include:
     Scene Description & Environment: Describe the overall environment (e.g., urban, rural, industrial, natural landscape), the visible terrain, and any significant features like structures, vehicles, or natural elements. Note the time of day or lighting conditions.
     Incident Characteristics: Identify the type of incident (e.g., accident, hazard, natural disaster, security event). Describe its apparent scale, severity, and any visible progression or impact.
@@ -19,16 +21,28 @@ def image_summarizer(uploaded_file, api_key):
     Inferred Urgency & Priority: Based on the visual evidence, infer the immediate urgency of the situation and suggest potential priorities for response (e.g., life safety, containment, damage control).
     Key Elements (Concise List): Provide a brief, bulleted list of the most critical elements identified that define the situation.
     The summary should be objective, descriptive, and focus on providing concrete observations that would inform a rapid response or further investigation.
-    Also generate the probablity/confidence of threat.
+    Identify the threat_type from given list of threats or mention  **Undefined** for unrelated threats: [{threats}]
+    Also generate the probability/confidence of threat based on severity of the incident from the image.
     Give the answer in json format, no extra information.
 
-    NUMERIC FORMAT ‒ Probabilities must be written with **two decimals** (e.g. 0.03, 0.58, 0.97).   ‒ Avoid rounding everything to extremes like 0.00 or 1.00 unless highly certain.
+    NUMERIC FORMAT - Probabilities must be written with **two decimals**.  
+    Probability guidelines:
+    Base “probability” on how clear and severe the danger is: 
+    - 0.0 for no emergency conditions. 
+    - 0.40 for any visible hazard (rampaging creature, rising water, smoke, etc.)  
+    - 0.97 for an active emergency/ hazar or calamity in progress which can lead to severe impact on lives.
+    - 1.00 only for absolute, undeniable crisis  
+    
+    • **Always format probability with two decimals** 
+    
     Keep image summary under 200 words.
+    
     **OUTPUT/JSON FORMAT**:
-    {
+    {{i
         "image_summary":[summary of image]
-        "probablity":[probablity/confidence of the threat]
-    } 
+        "threat_type": [Type of threat from given list or Undefined]
+        "probability":[probability/confidence of the threat severity]
+    }} 
     """
     
     media_samples = [uploaded_file]

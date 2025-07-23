@@ -19,3 +19,4 @@ sql_host = os.environ.get("SQL_HOST_IP", "192.168.24.2")
 
 # Input API Key
 api_key_nvd = os.environ.get("NVIDIA_API_KEY", "")
+api_key_openWeather = os.environ.get("GEOCODE_API_KEY", "47e473a0579dabe11724d58ed2d05719")

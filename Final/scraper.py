@@ -10,7 +10,7 @@ from dateutil import parser
 from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings, NVIDIARerank
 from langchain.schema import Document
 
-from config import embedding_model, reranker_model, api_key_nvd, sql_host, sql_database, sql_user, sql_password
+from config import insights_agents_model, embedding_model, reranker_model, api_key_nvd, sql_host, sql_database, sql_user, sql_password
 
 
 # load_dotenv()
@@ -86,7 +86,7 @@ def scrape_article(url: str) -> dict:
         return None
 
 # —— LLM CALL —— #
-def call_nvidia_llm(prompt: str) -> str:
+def call_nvidia_llm(prompt: str, model) -> str:
     resp = requests.post(
         NVIDIA_INVOKE_URL,
         headers={
@@ -94,7 +94,7 @@ def call_nvidia_llm(prompt: str) -> str:
             "Accept": "application/json",
         },
         json={
-            "model":     "nvidia/nemotron-mini-4b-instruct",
+            "model":     model,
             "messages":  [{"role":"user","content":prompt}],
             "max_tokens":1024,
             "temperature":0.2,
@@ -114,6 +114,7 @@ NV_rerank = NVIDIARerank(
     top_n=20
 )
 KEYWORDS = ["evacuate","rescue","firefighter","fire","water","emergency", "firebreak", "emergency", "shelter"]
+
 
 def retrieve_top_k(query, sentences, embeddings, k=50, boost=0.25, pre_k=100):
     q_emb = np.array(embedder.embed_query(query))
@@ -150,27 +151,30 @@ def main():
     # Create table
     cur.execute("""
     CREATE TABLE IF NOT EXISTS incidents (
-      id                           SERIAL PRIMARY KEY,
-      incident_name                TEXT,
-      incident_type                TEXT,
-      severity_level               INTEGER,
-      affected_location            TEXT,
-      identified_cause             TEXT,
-      estimated_economic_loss_usd   BIGINT,
-      reported_fatalities          INTEGER,
-      reported_injuries            INTEGER,
-      incident_summary             TEXT,
-      response_measures            TEXT,
-      anticipated_developments     TEXT,
-      affected_population_estimate INTEGER,
-      evacuations_ordered          TEXT,
-      infrastructure_impacted      TEXT,
-      emergency_status             TEXT,
-      responding_agencies          TEXT
-    );
+        id                        SERIAL PRIMARY KEY,
+        incident_name             TEXT    NOT NULL,
+        incident_type             TEXT    NOT NULL,  
+        ics_level                 INTEGER NOT NULL DEFAULT 0,
+        location                  TEXT    NOT NULL,
+        weather                   TEXT, 
+        resources_required        TEXT,
+        identified_cause          TEXT    NOT NULL DEFAULT 'Undefined',
+        incident_summary          TEXT,
+        response_measures         TEXT, 
+        anticipated_developments  TEXT,
+        responding_agencies       TEXT
+        );
     """)
     conn.commit()
 
+    cur.execute("SELECT DISTINCT threat_name from threats;")
+    valid_types = [row[0] for row in cur.fetchall()]
+    type_options = ", ".join(f'"{t}"' for t in valid_types + ["Undefined"])
+
+    cur.execute("SELECT agency_name FROM agencies;")
+    valid_agencies = [row[0] for row in cur.fetchall()]
+
+    
     # Process each incident
     for name, urls in INCIDENTS.items():
         # Scrape
@@ -190,39 +194,70 @@ def main():
             sents, embs, k=50
         ))
 
-        # Prompt LLM
-        prompt = f"""
-You are an information extraction assistant.
+        prompt_1 = f"""
+        You are a fact-extraction assistant. 
+        Choose **One** incident_type from: {type_options},
+        Return only that single string no-quotes, no JSON, no extra text.
+        Context:
+        {context}
+        """
+
+        model_1 = "nvidia/nemotron-mini-4b-instruct"
+        incident_type = call_nvidia_llm(prompt_1, model_1).strip()
+        if incident_type not in valid_types:
+            incident_type = "Undefined"
+
+
+        cur.execute("SELECT threat_cause FROM threats WHERE threat_name = %s;", (incident_type,))
+        valid_causes = [c[0] for c in cur.fetchall()]
+        cause_options = ", ".join(f'"{c}"' for c in valid_causes)
+
+        agency_options = ", ".join(f'"{c}"' for c in valid_agencies)
+
+
+        prompt_2 = f"""
+You are an information extraction assistant. The incident_type is "{incident_type}".
 Extract only **explicitly stated** facts into JSON—do **not** infer, assume, or hallucinate.
 **Return only the JSON object, with no markdown fences, no explanations, and no extra text.**
 
 Here is the schema your output must follow exactly:
 {{
   "incident_name" : ""                      // Must be the name of incident in short, sort of like a title, TEXT.
-  "incident_type": "",                      // Must be categorised into these categories only:  wildfire, urban fire, crowd-management incident, Undefined)
-  "severity_level": 0,                      // 1 to 10 reflecting severity based on described impact; use 0 if unspecified
-  "affected_location": "",                  // Region, city, state, etc.
-  "identified_cause": "",                   // Cause if mentioned (Look for text which mentions reason for any calamitites or incidents) or mention undefined
-  "estimated_economic_loss_usd": 0,         // Numeric, no formatting (e.g., 5000000)
-  "reported_fatalities": 0,                 // Number of deaths of people if any or 0
-  "reported_injuries": 0,                   // Number of injured of people if any or 0
-  "incident_summary": "",                   // 1 or 2 sentence summary of the event. Must highlight main points related mostly to the incident impact and emergency responses
+  "incident_type": {incident_type},                      
+  "ics_level": 0,                           // 1-5 reflecting severity based on described impact as mentioned below; use 0 if unspecified.
+  "location": "",                           // Region, city, state, etc.
+  "weather": "",                            // Weather Conditions at time of incident if not mentioned 'Undefined'
+  "resources_required": "",                 // Key assets deployed if not found, 'Unknown'
+  "identified_cause": "",                   // Choose **only one cause** which has the best relevance from the list of identified_causes: [{cause_options}] 
+  "incident_summary": "",                   // 4-5 sentence narrative: include where and how it started, its progression (distance or speed), key impacts (evacuations, infrastructure, habitat), and notable details (weather, heritage sites, etc.).
   "response_measures": "",                  // Steps taken in detail (e.g., evacuations, Incident-management, steps, declarations) by first responders or emergency agencies. Make sure to provide detailed information about the steps taken by the responders to handel the incident.
                                             // Provide a bullet numbered list of steps taken by the authorities to manage the incident and also manage the calamity as we need to find how they contained it. Avoid descriptive and unrealted words in response.
   "anticipated_developments": "",           // Future expectations or projections like if the threat is predicted to scale or it is mitigated
-  "affected_population_estimate": 0,        // Check if they have mentioned any number of people affected/evacuated or rescured only peoples Not the homes/property etc damaged etc., Only number of people. If not found mention 0
-  "evacuations_ordered": "",                // "Yes", "No", or "n/a"
-  "infrastructure_impacted": "",            // E.g., roads, power lines, water
-  "emergency_status": "",                   // "Declared", "Not Declared", or "n/a"
-  "responding_agencies": "",                // Government or official organizations mentioned
+  "responding_agencies": "",                // Identify and map any mentioned responder organizations to the closest names from: [{agency_options}]. 
+                                            // Return a comma-separated list of those best matches, with no extra text. If not found from list, mention ones present in the context.
 }}
+-- **ICS Level (ics_level)** maps to standard National Incident Management System Types:
+   5 = Type 5 incidents (routine, single-resource) 
+   4 = Type 4 incidents (somewhat complex, multiple resources)
+   3 = Type 3 incidents (significant, multi-agency, short-term)
+   2 = Type 2 incidents (extended duration, regional impact) 
+   1 = Type 1 incidents (highest complexity, national significance) 
+   0 = unspecified
 
 Context:
 {context}
 """.strip()
-        raw = call_nvidia_llm(prompt)
+        model_2 = "nvidia/llama-3.1-nemotron-nano-8b-v1"
+        raw = call_nvidia_llm(prompt_2, model=model_2)
         rec = json.loads(re.search(r"\{[\s\S]*\}", raw).group(0))
         rec["incident_name"] = name
+        if rec["identified_cause"] not in valid_causes:
+            rec["identified_cause"] = "Undefined"
+
+        # chosen = [a.strip() for a in rec["responding_agencies"].split(",")]
+        # rec["responding_agencies"] = ", ".join(
+        #     [a for a in chosen if a in valid_agencies]
+        # ) or "None"
 
         # e) Insert row
         cols = list(rec.keys())

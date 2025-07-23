@@ -1,6 +1,8 @@
 import openmeteo_requests
 import pandas as pd
 import json
+import requests
+from config import api_key_openWeather
 
 def hourly_weather(lat,long):
 	openmeteo = openmeteo_requests.Client()
@@ -102,3 +104,26 @@ def current_weather(lat,long):
 
     current_json = json.dumps(current_df)
     return current_json
+
+
+def get_location(lat, lon):
+    api_key = api_key_openWeather
+    if not api_key:
+        raise ValueError("An OpenWeatherMap API key must be provided.")
+
+    url = "http://api.openweathermap.org/geo/1.0/reverse"
+    params = {
+        "lat": lat,
+        "lon": lon,
+        "limit": 1,
+        "APPID": api_key
+    }
+
+    response = requests.get(url, params=params)
+    response.raise_for_status()
+    data = response.json()
+    if not data:
+        return {}
+
+    loc = data[0]
+    return ", ".join(filter(None, [loc.get("name"), loc.get("state"), loc.get("country")]))
