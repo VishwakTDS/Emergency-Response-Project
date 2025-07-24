@@ -35,7 +35,9 @@ html, body, #root {
   overflow-y: auto;
   padding: 3rem 2rem;
   box-sizing: border-box;
-  background: #fafafa;
+  /* background: #fafafa; */
+  background: #000;
+  color: #fff;
 }
 
 .right-dashboard {
@@ -44,8 +46,9 @@ html, body, #root {
   box-sizing: border-box;
   /* padding: 1rem; */
   gap: 2rem;
-  background: #e9ecef;
-  border-left: 1px solid #c8c8c8;
+  /* background: #e9ecef; */
+  background: #000;
+  /* border-left: 1px solid #c8c8c8; */
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -164,4 +167,14 @@ html, body, #root {
 /* Removing credit attribution tag */
 .leaflet-control-attribution, .leaflet-control-scale-line {
   display: none;
+}
+
+.leaflet-container{
+  background-color: #000;
+}
+
+.leaflet-layer,
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out{
+  filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(85%);
 }
