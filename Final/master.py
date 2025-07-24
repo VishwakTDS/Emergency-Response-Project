@@ -77,6 +77,23 @@ def input_processing(request):
 
 
 def response_generator(img, lat, lon):
+    # calling weather API
+    current_weather_df = current_weather(lat,lon)
+    current_weather_string = json.dumps(current_weather_df)
+    print(current_weather_string)
+    yield json.dumps({"type": "weather", "data": current_weather_df},
+                        ensure_ascii=False) + "\n"
+    hourly_weather_json = hourly_weather(lat,lon)
+    weather_api_data = ""
+    if current_weather_string :
+        weather_api_data += """
+        Current weather data:
+        """+ current_weather_string
+    # if hourly_weather_json:
+    #     weather_api_data += """\n
+    #     Hourly weather Data:
+    #     """+ hourly_weather_json
+    
     # Connect to database
     try:
         results = connection_sql(sql_database)
@@ -103,19 +120,6 @@ def response_generator(img, lat, lon):
     print("Image summary:")
     print(image_summary)
     print('\n\n----------\n\n')
-
-    # calling weather API
-    current_weather_json = current_weather(lat,lon)
-    hourly_weather_json = hourly_weather(lat,lon)
-    weather_api_data = ""
-    if current_weather_json :
-        weather_api_data += """
-        Current weather data:
-        """+ current_weather_json
-    # if hourly_weather_json:
-    #     weather_api_data += """\n
-    #     Hourly weather Data:
-    #     """+ hourly_weather_json
 
     # Embedding and reranking
     top2 = embedder_reranker(embedding_model, reranker_model, threat_summary_meta_data ,image_summary)

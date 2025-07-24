@@ -4,7 +4,7 @@ import './App.css'
 import Map from './Map'
 
 
-function App({setCauseText, setInsights, setAlertText, setIsLoading, setLat, setLon, lat, lon}) {
+function App({setCauseText, setInsights, setAlertText, setWeather, setIsLoading, setLat, setLon, lat, lon}) {
   const [file, setFile] = useState(null);
   // const [lat, setLat] = useState("");
   // const [lon, setLon] = useState("");
@@ -63,13 +63,14 @@ function App({setCauseText, setInsights, setAlertText, setIsLoading, setLat, set
           try        { obj = JSON.parse(line); } 
           catch (e)  { console.error("Bad JSON line:", line); continue; }
           
-          if (!gotFirstChunk) {
-            gotFirstChunk = true;
-            setIsLoading(false);
-          }
+          
 
           switch (obj.type) {
             case "cause_prediction":
+              if (!gotFirstChunk) {
+                gotFirstChunk = true;
+                setIsLoading(false);
+              }
               setCauseText(prev => prev + obj.data);
               break;
             case "insights":
@@ -78,6 +79,8 @@ function App({setCauseText, setInsights, setAlertText, setIsLoading, setLat, set
             case "alert":
               setAlertText(obj.data);
               break;
+            case "weather":
+              setWeather(obj.data);
             default:
               console.warn("Unknown chunk type:", obj.type);
           }

@@ -11,6 +11,7 @@ function Routing() {
     const [causeText,  setCauseText]  = useState("");
     const [insights,   setInsights]   = useState(null);
     const [alertText,  setAlertText]  = useState(null);
+    const [weather,  setWeather]  = useState(null);
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -27,6 +28,7 @@ function Routing() {
                             setCauseText={setCauseText}
                             setInsights={setInsights}
                             setAlertText={setAlertText}
+                            setWeather={setWeather}
                             setIsLoading={setIsLoading}
                             setLat={setLat}
                             setLon={setLon}
@@ -42,6 +44,7 @@ function Routing() {
                             causeText={causeText}
                             insights={insights}
                             alertText={alertText}
+                            weather={weather}
                             isLoading={isLoading}
                             lat={lat}
                             lon={lon}

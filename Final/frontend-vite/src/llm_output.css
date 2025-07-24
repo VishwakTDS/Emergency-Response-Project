@@ -4,6 +4,7 @@ html, body, #root {
   overflow: hidden;
   font-family: system-ui, sans-serif;
   color: black;
+  --toggle-button-size: 50px;
 }
 
 .llm-response-window {
@@ -51,6 +52,12 @@ html, body, #root {
   flex-direction: column;
 }
 
+.top-right {
+  display: flex;
+  height: 65%;
+  width: auto;
+}
+
 .loadingbar {
   display: flex;
   /* border: 1px solid red; */
@@ -70,7 +77,7 @@ html, body, #root {
 }
 
 .map-style {
-  height: 65%;
+  height: 100%;
   width: 100%;
   margin: 0;
   /* max-width: 600px; */
@@ -125,20 +132,11 @@ html, body, #root {
 /* Info Icon */
 .info-icon {
   cursor: pointer;
-  display: inline-flex;
   width: 1.25rem;
-  height: 1.2rem;
+  height: 1.25rem;
   padding: 4px;
   border-radius: 3px;
   transition: background .15s;
-}
-
-.info-icon circle {
-  fill: #3498db;
-}
-
-.info-icon text {
-  fill: white;
 }
 
 .info-icon:hover {
@@ -153,11 +151,14 @@ html, body, #root {
   transition: max-height 0.75s ease;
   font-weight: 400;
   line-height: 1.4;
-  margin-top: 4px;
 }
 
 .popup-message.expanded .popup-more-info {
   max-height: 400px; 
+}
+
+.popup-more-info-inner {
+  margin-top: 4px;
 }
 /* End of Popup Message */
 
@@ -165,3 +166,47 @@ html, body, #root {
 .leaflet-control-attribution, .leaflet-control-scale-line {
   display: none;
 }
+
+/* Weather widget */
+.weather-widget {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1.5rem 1.2rem;
+  min-width: 210px;
+  max-width: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0 auto;
+}
+
+.group {
+  display: flex;
+  /* width: 100%;
+  justify-content: space-between; */
+  gap: 2rem;
+}
+
+.wind {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.weather-icon {
+  font-size: 6rem;
+}
+
+.weather-hidden {
+  display: none;
+}
+
+.temperature {
+  font-size: 2rem;
+}
+
+.wind-arrow {
+  font-size: 2rem;
+  color: #333;
+  transition: transform 0.3s;
+}
+/* Weather widget end */
