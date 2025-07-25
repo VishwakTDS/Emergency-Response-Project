@@ -15,6 +15,7 @@ function Routing() {
 
     const [isLoading, setIsLoading] = useState(false);
 
+    const [file, setFile] = useState(null);
     const [lat, setLat] = useState("");
     const [lon, setLon] = useState("");
 
@@ -30,8 +31,10 @@ function Routing() {
                             setAlertText={setAlertText}
                             setWeather={setWeather}
                             setIsLoading={setIsLoading}
+                            setFile={setFile}
                             setLat={setLat}
                             setLon={setLon}
+                            file={file}
                             lat={lat}
                             lon={lon}
                         />
@@ -46,6 +49,7 @@ function Routing() {
                             alertText={alertText}
                             weather={weather}
                             isLoading={isLoading}
+                            file={file}
                             lat={lat}
                             lon={lon}
                         />

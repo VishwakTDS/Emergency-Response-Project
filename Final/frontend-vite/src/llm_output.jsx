@@ -10,18 +10,29 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
     faCircleInfo,
     faArrowDownLong,
-    faSun,
-    faMoon,
-    faCloudSun,
-    faCloudMoon,
-    faCloud,
-    faSmog,
-    faCloudRain,
-    faCloudShowersHeavy,
-    faSnowflake,
-    faCloudBolt,
- } from '@fortawesome/free-solid-svg-icons';
- import Switch from '@mui/material/Switch';
+    faArrowsRotate,
+} from '@fortawesome/free-solid-svg-icons';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+ import {
+  WiDaySunny,
+  WiNightClear,
+  WiCloudy,
+  WiFog,
+  WiSprinkle,
+  WiSleet,
+  WiRain,
+  WiRainMix,
+  WiShowers,
+  WiSnow,
+  WiSnowflakeCold,
+  WiThunderstorm,
+  WiHail,
+  WiStrongWind
+} from "react-icons/wi";
 
 const prettify = s =>
         s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -54,113 +65,79 @@ const PopupMessage = ({isAlert, message, moreInfo}) => {
   );
 };
 
-const weatherCodes = {
-    0: 'clear',
-    1: 'partly-cloudy', 2: 'partly-cloudy', 3: 'cloudy',
-    45: 'fog', 48: 'fog',
-    51: 'drizzle', 53: 'drizzle', 55: 'drizzle',
-    56: 'drizzle', 57: 'drizzle',
-    61: 'rain', 63: 'rain', 65: 'rain',
-    66: 'rain', 67: 'rain',
-    71: 'snow', 73: 'snow', 75: 'snow',
-    77: 'snow',
-    80: 'rain', 81: 'rain', 82: 'rain',
-    85: 'snow', 86: 'snow',
-    95:	'thunderstorm',
-    96: 'thunderstorm', 99: 'thunderstorm'
+const weatherCodeToIcon = (code, isDay) => {
+    code = Number(code);
+
+    if (code === 0)                 return isDay ? <WiDaySunny /> : <WiNightClear />;         // clear
+    if ([1, 2, 3].includes(code))   return <WiCloudy />;                                      // mainly clear / cloudy
+    if ([45, 48].includes(code))    return <WiFog />;                                         // fog
+    if ([51, 53, 55].includes(code))return <WiSprinkle />;                                    // drizzle
+    if ([56, 57].includes(code))    return <WiSleet />;                                       // freezing drizzle
+    if ([61, 63, 65].includes(code))return <WiRain />;                                        // rain
+    if ([66, 67].includes(code))    return <WiRainMix />;                                     // freezing rain
+    if ([71, 73, 75].includes(code))return <WiSnow />;                                        // snow
+    if (code === 77)                return <WiSnowflakeCold />;                               // snow grains
+    if ([80, 81, 82].includes(code))return <WiShowers />;                                     // rain showers
+    if ([85, 86].includes(code))    return <WiSnow />;                                        // snow showers
+    if (code === 95)                return <WiThunderstorm />;                                // thunderstorm
+    if ([96, 99].includes(code))    return <WiHail />;                                        // thunderstorm + hail
+    return <WiStrongWind />;                                                                  // fallback
 };
 
-const LLM_Output = ({ causeText, insights, alertText, weather, isLoading, lat, lon }) => {
-    const [isMetric, setIsFarenheit] = useState(false);
+const LLM_Output = ({ causeText, insights, alertText, weather, isLoading, file, lat, lon }) => {
+    const [isMetric, setIsMetric] = useState(false);
     const [weatherIcon,  setWeatherIcon]  = useState("");
-    useEffect(() => {
-        if (!weather) return;
-        let icon = null;
-
-        switch (weatherCodes[weather?.current_weather_code]) {
-            case 'clear':
-                icon = weather.current_is_day ? faSun : faMoon;
-                break;
-            case 'partly-cloudy':
-                icon = weather.current_is_day ? faCloudSun : faCloudMoon;
-                break;
-            case 'cloudy':
-                icon = faCloud
-                break;
-            case 'fog':
-                icon = faSmog
-                break;
-            case 'drizzle':
-                icon = faCloudRain
-                break;
-            case 'rain':
-                icon = faCloudShowersHeavy
-                break;
-            case 'snow':
-                icon = faSnowflake
-                break;
-            case 'thunderstorm':
-                icon = faCloudBolt
-                break;
-            default:
-                console.warn("Unknown weather code: ", weather?.current_weather_code);
-        }
-
-        setWeatherIcon(icon);
-    }, [weather])
     
     return (
-        <div className="llm-response-window">
-            <div className="responsebox">
+        <div className="dashboard">
+            <header>
                 <div className="back-button">
                     <BackButton /> 
                 </div>
-                <div className="left-dashboard">
-                    <div className="textreply">
-                        {causeText && (
-                            <div className="agent-response">
-                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{causeText}</ReactMarkdown>
-                            </div>
-                        )}
+                <h1>Emergency Response Dashboard</h1>
+            </header>
 
-                        <div className="loadingbar">
-                            {isLoading && (
-                                <Box 
-                                sx={{ 
-                                    display: 'flex',
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    p: 2,
-                                    }}
-                                    >
-                                    <CircularProgress size="3em" />
-                                </Box>
-                            )}
-                        </div>
-                    </div>
-                </div>
+            <main className="grid">
+                <section className="card map-card">
+                    <Map 
+                        className="map-style" 
+                        lat={lat} long={lon}
+                    />
+                </section>
 
-                <div className="right-dashboard">
-                    <div className="top-right">
-                        <div className="map-style">
-                            <Map lat={lat} long={lon}/>
-                        </div>
-                        <div className="weather-widget">
-                            <FontAwesomeIcon 
-                                icon={weatherIcon}
-                                className="weather-icon"
-                            />
+                <section className="card weather-card">
+                     {weather && (
+                        <>
+                            <div className="weather-main">
+                                <div className="weather-icon">
+                                    {weatherCodeToIcon(
+                                        weather.current_weather_code,
+                                        weather.current_is_day
+                                    )}
+                                </div>
+                                <div className={`weather-temp temp-celsius${isMetric ? "" : " weather-hidden"}`}>
+                                    {weather?.current_temperature_2m.toFixed(1)} °C
+                                </div>
 
-                            <div className={`temperature temp-celsius${isMetric ? "" : " weather-hidden"}`}>
-                                {weather?.current_temperature_2m.toFixed(1)} °C
+                                <div className={`weather-temp temp-farenheit${isMetric ? " weather-hidden" : ""}`}>
+                                    {((weather?.current_temperature_2m * 9) / 5 + 32).toFixed(1)} °F
+                                </div>
                             </div>
 
-                            <div className={`temperature temp-farenheit${isMetric ? " weather-hidden" : ""}`}>
-                                {((weather?.current_temperature_2m * 9) / 5 + 32).toFixed(1)} °F
-                            </div>
+                            <div className="weather-details">
+                                <div className="feels-like">
+                                    Feels Like
+                                    <div className={`feels-like-celsius${isMetric ? "" : " weather-hidden"}`}>
+                                        {weather?.current_apparent_temperature.toFixed(1)} °C
+                                    </div>
 
-                            <div className="group">
+                                    <div className={`feels-like-farenheit${isMetric ? " weather-hidden" : ""}`}>
+                                        {((weather?.current_apparent_temperature * 9) / 5 + 32).toFixed(1)} °F
+                                    </div>
+                                </div>
+
                                 <div className="wind">
+                                    Wind
                                     <FontAwesomeIcon 
                                         icon={faArrowDownLong} 
                                         className="wind-arrow"
@@ -177,33 +154,73 @@ const LLM_Output = ({ causeText, insights, alertText, weather, isLoading, lat, l
                                 </div>
 
                                 <div className="humidity">
+                                    Humidity
                                     {weather?.current_relative_humidity_2m.toFixed(1)}%
                                 </div>
+                                
+                                <div className="precipitation">
+                                    Precipitation
+                                    <div className={`precipitation-mm${isMetric ? "" : " weather-hidden"}`}>
+                                        {weather?.current_precipitation.toFixed(1)} mm
+                                    </div>
+
+                                    <div className={`precipitation-in${isMetric ? " weather-hidden" : ""}`}>
+                                        {(weather?.current_precipitation / 24.5).toFixed(1)} in
+                                    </div>
+                                </div>
+
+                                <div className="pressure">
+                                    Pressure
+                                    <div className={`pressure-hPa${isMetric ? "" : " weather-hidden"}`}>
+                                        {weather?.current_pressure_msl .toFixed(1)} hPa
+                                    </div>
+
+                                    <div className={`pressure-Hg${isMetric ? " weather-hidden" : ""}`}>
+                                        {(weather?.current_pressure_msl   * 0.02953).toFixed(1)} Hg
+                                    </div>
+                                </div>
+
+                                <button
+                                    className="unit-toggle"
+                                    onClick={() => setIsMetric(e => !e)}
+                                    title="Switch units"
+                                >
+                                    <FontAwesomeIcon icon={faArrowsRotate} /> {isMetric ? "Imperial" : "Metric"}
+                                </button>
                             </div>
+                        </>
+                    )}
+                </section>
 
-                            <div className="group">
-                                <div className={`precipitation${isMetric ? "" : " weather-hidden"}`}>
-                                    {weather?.current_precipitation.toFixed(1)} mm
-                                </div>
+                <section className="card image-card">
+                        {file && <img src={URL.createObjectURL(file)} alt="preview" />}
+                </section>
 
-                                <div className={`precipitation${isMetric ? " weather-hidden" : ""}`}>
-                                    {(weather?.current_precipitation / 24.5).toFixed(1)} in
-                                </div>
-
-                                <div className={`pressure${isMetric ? "" : " weather-hidden"}`}>
-                                    {weather?.current_surface_pressure.toFixed(1)} hPa
-                                </div>
-
-                                <div className={`pressure${isMetric ? " weather-hidden" : ""}`}>
-                                    {(weather?.current_surface_pressure  * 0.02953).toFixed(1)} Hg
-                                </div>
-                            </div>
-
-                            <Switch onClick={() => setIsFarenheit((e) => !e)} />
+                <section className="card cause-prediction-card">
+                    {causeText && (
+                        <div className="agent-response">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{causeText}</ReactMarkdown>
                         </div>
-                    </div>
+                    )}
 
-                    {insights &&
+                    <div className="loadingbar">
+                        {isLoading && (
+                            <Box 
+                            sx={{ 
+                                display: 'flex',
+                                justifyContent: "center",
+                                alignItems: "center",
+                                p: 2,
+                                }}
+                                >
+                                <CircularProgress size="3em" />
+                            </Box>
+                        )}
+                    </div>
+                </section>
+
+                {insights &&
+                    <section className="card insights-card">
                         <PopupMessage
                             isAlert={!!insights.agency}
                             message={
@@ -221,9 +238,20 @@ const LLM_Output = ({ causeText, insights, alertText, weather, isLoading, lat, l
                                 )
                             }
                         />
-                    }
-                </div>
-            </div>
+                    </section>
+                }
+                
+                {alertText &&
+                    <section className="card alert-card">
+                        <strong>Responder: </strong>
+                        <span>
+                            {alertText.alerts.map(alert => (
+                            prettify(alert.responder)
+                            )).join(', ')}
+                        </span>
+                    </section>
+                }
+            </main>
         </div>
     );
 };

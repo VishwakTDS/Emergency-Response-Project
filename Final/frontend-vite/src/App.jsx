@@ -4,8 +4,7 @@ import './App.css'
 import Map from './Map'
 
 
-function App({setCauseText, setInsights, setAlertText, setWeather, setIsLoading, setLat, setLon, lat, lon}) {
-  const [file, setFile] = useState(null);
+function App({setCauseText, setInsights, setAlertText, setWeather, setIsLoading, setFile, setLat, setLon, file, lat, lon}) {
   // const [lat, setLat] = useState("");
   // const [lon, setLon] = useState("");
 
