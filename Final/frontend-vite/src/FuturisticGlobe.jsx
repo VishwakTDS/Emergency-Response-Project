@@ -110,7 +110,7 @@ export default function FuturisticGlobe({ lat, lon }) {
     if (globeEl.current) {
       const controls = globeEl.current.controls();
       controls.autoRotate = true;
-      controls.autoRotateSpeed = 0.3;
+      controls.autoRotateSpeed = 0.8;
     }
   }, []);
 
