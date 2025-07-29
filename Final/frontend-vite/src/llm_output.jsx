@@ -98,113 +98,109 @@ const LLM_Output = ({ causeText, insights, alertText, weather, isLoading, file, 
             </header>
 
             <main className="grid">
-                <section className="card map-card">
-                    <Map 
-                        className="map-style" 
-                        lat={lat} long={lon}
-                    />
-                </section>
-
-                <section className="card weather-card">
-                     {weather && (
-                        <>
-                            <div className="weather-main">
-                                <div className="weather-icon">
-                                    {weatherCodeToIcon(
-                                        weather.current_weather_code,
-                                        weather.current_is_day
-                                    )}
-                                </div>
-                                <div className={`weather-temp temp-celsius${isMetric ? "" : " weather-hidden"}`}>
-                                    {weather?.current_temperature_2m.toFixed(1)} °C
-                                </div>
-
-                                <div className={`weather-temp temp-farenheit${isMetric ? " weather-hidden" : ""}`}>
-                                    {((weather?.current_temperature_2m * 9) / 5 + 32).toFixed(1)} °F
-                                </div>
-                            </div>
-
-                            <div className="weather-details">
-                                <div className="feels-like">
-                                    Feels Like
-                                    <div className={`feels-like-celsius${isMetric ? "" : " weather-hidden"}`}>
-                                        {weather?.current_apparent_temperature.toFixed(1)} °C
+                <div className="top">
+                    <section className="card weather-card">
+                        {weather && (
+                            <>
+                                <div className="weather-main">
+                                    <div className="weather-icon">
+                                        {weatherCodeToIcon(
+                                            weather.current_weather_code,
+                                            weather.current_is_day
+                                        )}
+                                    </div>
+                                    <div className={`weather-temp temp-celsius${isMetric ? "" : " weather-hidden"}`}>
+                                        {weather?.current_temperature_2m.toFixed(1)} °C
                                     </div>
 
-                                    <div className={`feels-like-farenheit${isMetric ? " weather-hidden" : ""}`}>
-                                        {((weather?.current_apparent_temperature * 9) / 5 + 32).toFixed(1)} °F
+                                    <div className={`weather-temp temp-farenheit${isMetric ? " weather-hidden" : ""}`}>
+                                        {((weather?.current_temperature_2m * 9) / 5 + 32).toFixed(1)} °F
                                     </div>
                                 </div>
 
-                                <div className="wind">
-                                    Wind
-                                    <FontAwesomeIcon 
-                                        icon={faArrowDownLong} 
-                                        className="wind-arrow"
-                                        style={{ transform: `rotate(${weather?.current_wind_direction_10m}deg)` }}
-                                    />
+                                <div className="weather-details">
+                                    <div className="feels-like">
+                                        Feels Like
+                                        <div className={`feels-like-celsius${isMetric ? "" : " weather-hidden"}`}>
+                                            {weather?.current_apparent_temperature.toFixed(1)} °C
+                                        </div>
 
-                                    <div className={`wind-speed-kph${isMetric ? "" : " weather-hidden"}`}>
-                                        {weather?.current_wind_speed_10m.toFixed(1)} kph
+                                        <div className={`feels-like-farenheit${isMetric ? " weather-hidden" : ""}`}>
+                                            {((weather?.current_apparent_temperature * 9) / 5 + 32).toFixed(1)} °F
+                                        </div>
                                     </div>
 
-                                    <div className={`wind-speed-mph${isMetric ? " weather-hidden" : ""}`}>
-                                        {(weather?.current_wind_speed_10m * 0.62137119).toFixed(1)} mph
+                                    <div className="wind">
+                                        Wind
+                                        <FontAwesomeIcon 
+                                            icon={faArrowDownLong} 
+                                            className="wind-arrow"
+                                            style={{ transform: `rotate(${weather?.current_wind_direction_10m}deg)` }}
+                                        />
+
+                                        <div className={`wind-speed-kph${isMetric ? "" : " weather-hidden"}`}>
+                                            {weather?.current_wind_speed_10m.toFixed(1)} kph
+                                        </div>
+
+                                        <div className={`wind-speed-mph${isMetric ? " weather-hidden" : ""}`}>
+                                            {(weather?.current_wind_speed_10m * 0.62137119).toFixed(1)} mph
+                                        </div>
                                     </div>
+
+                                    <div className="humidity">
+                                        Humidity
+                                        {weather?.current_relative_humidity_2m.toFixed(1)}%
+                                    </div>
+                                    
+                                    <div className="precipitation">
+                                        Precipitation
+                                        <div className={`precipitation-mm${isMetric ? "" : " weather-hidden"}`}>
+                                            {weather?.current_precipitation.toFixed(1)} mm
+                                        </div>
+
+                                        <div className={`precipitation-in${isMetric ? " weather-hidden" : ""}`}>
+                                            {(weather?.current_precipitation / 24.5).toFixed(1)} in
+                                        </div>
+                                    </div>
+
+                                    <div className="pressure">
+                                        Pressure
+                                        <div className={`pressure-hPa${isMetric ? "" : " weather-hidden"}`}>
+                                            {weather?.current_pressure_msl .toFixed(1)} hPa
+                                        </div>
+
+                                        <div className={`pressure-Hg${isMetric ? " weather-hidden" : ""}`}>
+                                            {(weather?.current_pressure_msl   * 0.02953).toFixed(1)} Hg
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        className="unit-toggle"
+                                        onClick={() => setIsMetric(e => !e)}
+                                        title="Switch units"
+                                    >
+                                        <FontAwesomeIcon icon={faArrowsRotate} /> {isMetric ? "Imperial" : "Metric"}
+                                    </button>
                                 </div>
+                            </>
+                        )}
+                    </section>
 
-                                <div className="humidity">
-                                    Humidity
-                                    {weather?.current_relative_humidity_2m.toFixed(1)}%
-                                </div>
-                                
-                                <div className="precipitation">
-                                    Precipitation
-                                    <div className={`precipitation-mm${isMetric ? "" : " weather-hidden"}`}>
-                                        {weather?.current_precipitation.toFixed(1)} mm
-                                    </div>
+                    <section className="card map-card">
+                        <Map 
+                            className="map-style" 
+                            lat={lat} long={lon}
+                        />
+                    </section>
 
-                                    <div className={`precipitation-in${isMetric ? " weather-hidden" : ""}`}>
-                                        {(weather?.current_precipitation / 24.5).toFixed(1)} in
-                                    </div>
-                                </div>
+                    <section className="card image-card">
+                            {file && <img src={URL.createObjectURL(file)} alt="preview" />}
+                    </section>
+                </div>
 
-                                <div className="pressure">
-                                    Pressure
-                                    <div className={`pressure-hPa${isMetric ? "" : " weather-hidden"}`}>
-                                        {weather?.current_pressure_msl .toFixed(1)} hPa
-                                    </div>
-
-                                    <div className={`pressure-Hg${isMetric ? " weather-hidden" : ""}`}>
-                                        {(weather?.current_pressure_msl   * 0.02953).toFixed(1)} Hg
-                                    </div>
-                                </div>
-
-                                <button
-                                    className="unit-toggle"
-                                    onClick={() => setIsMetric(e => !e)}
-                                    title="Switch units"
-                                >
-                                    <FontAwesomeIcon icon={faArrowsRotate} /> {isMetric ? "Imperial" : "Metric"}
-                                </button>
-                            </div>
-                        </>
-                    )}
-                </section>
-
-                <section className="card image-card">
-                        {file && <img src={URL.createObjectURL(file)} alt="preview" />}
-                </section>
-
-                <section className="card cause-prediction-card">
-                    {causeText && (
-                        <div className="agent-response">
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{causeText}</ReactMarkdown>
-                        </div>
-                    )}
-
-                    <div className="loadingbar">
-                        {isLoading && (
+                <div className="bottom">
+                    {isLoading ? (
+                        <div className="loadingbar">
                             <Box 
                             sx={{ 
                                 display: 'flex',
@@ -215,42 +211,52 @@ const LLM_Output = ({ causeText, insights, alertText, weather, isLoading, file, 
                                 >
                                 <CircularProgress size="3em" />
                             </Box>
-                        )}
-                    </div>
-                </section>
+                        </div>
+                    ) : (
+                        <>
+                            {causeText && (
+                                <section className="card cause-prediction-card">
+                                    <div className="agent-response">
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{causeText}</ReactMarkdown>
+                                    </div>
+                                </section>
+                            )}
 
-                {insights &&
-                    <section className="card insights-card">
-                        <PopupMessage
-                            isAlert={!!insights.agency}
-                            message={
-                                insights?.action && (
-                                    <div className="insights-output-action">
-                                        <strong>Action:</strong> {prettify(insights.action)}
-                                    </div>
-                                )
+                            {insights &&
+                                <section className="card insights-card">
+                                    <PopupMessage
+                                        isAlert={!!insights.agency}
+                                        message={
+                                            insights?.action && (
+                                                <div className="insights-output-action">
+                                                    <strong>Action:</strong> {prettify(insights.action)}
+                                                </div>
+                                            )
+                                        }
+                                        moreInfo={
+                                            insights?.messages && (
+                                                <div className="insights-output-messages">
+                                                    <strong>Messages:</strong> <ReactMarkdown remarkPlugins={[remarkGfm]}>{insights.messages.join('\n\n')}</ReactMarkdown>
+                                                </div>
+                                            )
+                                        }
+                                    />
+                                </section>
                             }
-                            moreInfo={
-                                insights?.messages && (
-                                    <div className="insights-output-messages">
-                                        <strong>Messages:</strong> <ReactMarkdown remarkPlugins={[remarkGfm]}>{insights.messages.join('\n\n')}</ReactMarkdown>
-                                    </div>
-                                )
+                            
+                            {alertText &&
+                                <section className="card alert-card">
+                                    <strong>Responder: </strong>
+                                    <span>
+                                        {alertText.alerts.map(alert => (
+                                        prettify(alert.responder)
+                                        )).join(', ')}
+                                    </span>
+                                </section>
                             }
-                        />
-                    </section>
-                }
-                
-                {alertText &&
-                    <section className="card alert-card">
-                        <strong>Responder: </strong>
-                        <span>
-                            {alertText.alerts.map(alert => (
-                            prettify(alert.responder)
-                            )).join(', ')}
-                        </span>
-                    </section>
-                }
+                        </>
+                    )}
+                </div>
             </main>
         </div>
     );

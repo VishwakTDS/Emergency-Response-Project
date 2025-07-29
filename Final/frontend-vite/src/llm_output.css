@@ -20,6 +20,8 @@ body,
   margin: 0;
   background: var(--bg);
   color: var(--txt);
+  width: 100vw;
+  height: 100vh;
 }
 
 .dashboard {
@@ -39,7 +41,7 @@ header {
 }
 
 h1 {
-  margin: 0;
+  margin: auto;
   font-size: 1.4rem;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -75,22 +77,23 @@ h1 {
 
 /* Responsive */
 main.grid {
-  display: grid;
-  gap: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
   padding: 1.2rem 2rem;
-  flex: 1;
+  gap: 1.2rem;
+  width: 100vw;
+  box-sizing: border-box;
 }
 
-@media (min-width: 640px) {
-  main.grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.top, .bottom {
+  display: flex;
+  flex-direction: row;
+  gap: 1.2rem;
 }
 
-@media (min-width: 1080px) {
-  main.grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+.top {
+  width: 100%;
 }
 
 /* Card */
@@ -105,6 +108,7 @@ main.grid {
   overflow: hidden;
   height: var(--card-height);
   margin: auto;
+  max-width: 33.33%;
 }
 
 /* subtle inner glow */
@@ -124,6 +128,8 @@ main.grid {
   padding: 0;
   margin: 0;
   height: calc(var(--card-height) + 2 * var(--card-padding));
+  flex: 1 0 33.33%;
+  max-width: none;
 }
 
 .map-style {
@@ -137,6 +143,15 @@ main.grid {
   width: 100%;
 }
 
+.leaflet-container{
+  background-color: #000;
+}
+
+.leaflet-layer,
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out{
+  filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(85%);
+}
 
 /* Removing credit attribution tag */
 .leaflet-control-attribution, .leaflet-control-scale-line {
@@ -149,6 +164,7 @@ main.grid {
   flex-direction: column;
   align-items: center;
   text-align: center;
+  flex: 0 0 240px;
 }
 
 .weather-main {
@@ -177,7 +193,7 @@ main.grid {
 
 .wind-arrow {
   font-size: 2rem;
-  color: #333;
+  color: var(--txt);
   transition: transform 0.3s;
 }
 
@@ -211,6 +227,7 @@ main.grid {
   /* border: 1px solid red; */
   /* padding: 5em; */
   /* margin-left: 30vw; */
+  margin: auto;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
@@ -245,8 +262,8 @@ main.grid {
 }
 
 .insights-card {
-  max-height: var(--card-height);
-  max-width: 100%;
+  /* max-height: var(--card-height); */
+  /* max-width: 100%; */
   width: fit-content;
   height: fit-content; 
   display: flex;
