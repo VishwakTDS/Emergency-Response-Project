@@ -5,8 +5,6 @@
   --txt: #e4e8f0;
   --accent: #16d4ff;
   --accent-soft: #16d4ff44;
-  --danger: #ff3b58;
-  --success: #28e38c;
   --radius: 12px;
   --blur: 16px;
   --card-height: 40vh;
@@ -27,7 +25,6 @@ body,
 .dashboard {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
 }
 
 /* Header */
@@ -64,6 +61,11 @@ h1 {
   font-weight: 600;
   cursor: pointer;
   transition: background 0.25s, transform 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 1rem;
 }
 
 .unit-toggle:hover {
@@ -75,6 +77,14 @@ h1 {
   transform: scale(0.96);
 }
 
+.unit-toggle .rotate-icon {
+  transition: transform 0.75s cubic-bezier(.4,2,.6,1);
+}
+
+.unit-toggle.rotated .rotate-icon {
+  transform: rotate(180deg);
+}
+
 /* Responsive */
 main.grid {
   display: flex;
@@ -82,7 +92,6 @@ main.grid {
   flex-wrap: wrap;
   padding: 1.2rem 2rem;
   gap: 1.2rem;
-  width: 100vw;
   box-sizing: border-box;
 }
 
@@ -184,11 +193,23 @@ main.grid {
 
 .weather-details {
   margin-top: 0.8rem;
-  display: grid;
-  grid-template-columns: repeat(2, auto);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 0.3rem 1rem;
   font-size: 0.9rem;
   opacity: 0.85;
+}
+
+.weather-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.wind-elements {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
 
 .wind-arrow {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import CircularProgress from '@mui/material/CircularProgress';
@@ -12,11 +12,6 @@ import {
     faArrowDownLong,
     faArrowsRotate,
 } from '@fortawesome/free-solid-svg-icons';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
  import {
   WiDaySunny,
   WiNightClear,
@@ -119,67 +114,77 @@ const LLM_Output = ({ causeText, insights, alertText, weather, isLoading, file, 
                                 </div>
 
                                 <div className="weather-details">
-                                    <div className="feels-like">
-                                        Feels Like
-                                        <div className={`feels-like-celsius${isMetric ? "" : " weather-hidden"}`}>
-                                            {weather?.current_apparent_temperature.toFixed(1)} °C
+                                    <div className="weather-row first">
+                                        <div className="feels-like">
+                                            <p><strong>Feels Like</strong></p>
+                                            <div className={`feels-like-celsius${isMetric ? "" : " weather-hidden"}`}>
+                                                {weather?.current_apparent_temperature.toFixed(1)} °C
+                                            </div>
+
+                                            <div className={`feels-like-farenheit${isMetric ? " weather-hidden" : ""}`}>
+                                                {((weather?.current_apparent_temperature * 9) / 5 + 32).toFixed(1)} °F
+                                            </div>
                                         </div>
 
-                                        <div className={`feels-like-farenheit${isMetric ? " weather-hidden" : ""}`}>
-                                            {((weather?.current_apparent_temperature * 9) / 5 + 32).toFixed(1)} °F
-                                        </div>
-                                    </div>
-
-                                    <div className="wind">
-                                        Wind
-                                        <FontAwesomeIcon 
-                                            icon={faArrowDownLong} 
-                                            className="wind-arrow"
-                                            style={{ transform: `rotate(${weather?.current_wind_direction_10m}deg)` }}
-                                        />
-
-                                        <div className={`wind-speed-kph${isMetric ? "" : " weather-hidden"}`}>
-                                            {weather?.current_wind_speed_10m.toFixed(1)} kph
-                                        </div>
-
-                                        <div className={`wind-speed-mph${isMetric ? " weather-hidden" : ""}`}>
-                                            {(weather?.current_wind_speed_10m * 0.62137119).toFixed(1)} mph
+                                        <div className="humidity">
+                                            <p><strong>Humidity</strong></p>
+                                            {weather?.current_relative_humidity_2m.toFixed(1)}%
                                         </div>
                                     </div>
+                                    <div className="weather-row second">
+                                        <div className="wind">
+                                            <p><strong>Wind</strong></p>
+                                            <div className="wind-elements">
+                                                <FontAwesomeIcon 
+                                                    icon={faArrowDownLong} 
+                                                    className="wind-arrow"
+                                                    style={{ transform: `rotate(${weather?.current_wind_direction_10m}deg)` }}
+                                                />
 
-                                    <div className="humidity">
-                                        Humidity
-                                        {weather?.current_relative_humidity_2m.toFixed(1)}%
+                                                <span className={`wind-speed-kph${isMetric ? "" : " weather-hidden"}`}>
+                                                    {weather?.current_wind_speed_10m.toFixed(1)} kph
+                                                </span>
+
+                                                <span className={`wind-speed-mph${isMetric ? " weather-hidden" : ""}`}>
+                                                    {(weather?.current_wind_speed_10m * 0.62137119).toFixed(1)} mph
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    
-                                    <div className="precipitation">
-                                        Precipitation
-                                        <div className={`precipitation-mm${isMetric ? "" : " weather-hidden"}`}>
-                                            {weather?.current_precipitation.toFixed(1)} mm
+                                    <div className="weather-row third">
+                                        <div className="precipitation">
+                                            <p><strong>Precipitation</strong></p>
+                                            <div className={`precipitation-mm${isMetric ? "" : " weather-hidden"}`}>
+                                                {weather?.current_precipitation.toFixed(1)} mm
+                                            </div>
+
+                                            <div className={`precipitation-in${isMetric ? " weather-hidden" : ""}`}>
+                                                {(weather?.current_precipitation / 24.5).toFixed(1)} in
+                                            </div>
                                         </div>
 
-                                        <div className={`precipitation-in${isMetric ? " weather-hidden" : ""}`}>
-                                            {(weather?.current_precipitation / 24.5).toFixed(1)} in
-                                        </div>
-                                    </div>
+                                        <div className="pressure">
+                                            <p><strong>Pressure</strong></p>
+                                            <div className={`pressure-hPa${isMetric ? "" : " weather-hidden"}`}>
+                                                {weather?.current_pressure_msl .toFixed(1)} hPa
+                                            </div>
 
-                                    <div className="pressure">
-                                        Pressure
-                                        <div className={`pressure-hPa${isMetric ? "" : " weather-hidden"}`}>
-                                            {weather?.current_pressure_msl .toFixed(1)} hPa
-                                        </div>
-
-                                        <div className={`pressure-Hg${isMetric ? " weather-hidden" : ""}`}>
-                                            {(weather?.current_pressure_msl   * 0.02953).toFixed(1)} Hg
+                                            <div className={`pressure-Hg${isMetric ? " weather-hidden" : ""}`}>
+                                                {(weather?.current_pressure_msl   * 0.02953).toFixed(1)} Hg
+                                            </div>
                                         </div>
                                     </div>
 
                                     <button
-                                        className="unit-toggle"
+                                        className={`unit-toggle${isMetric ? " rotated" : ""}`}
                                         onClick={() => setIsMetric(e => !e)}
                                         title="Switch units"
                                     >
-                                        <FontAwesomeIcon icon={faArrowsRotate} /> {isMetric ? "Imperial" : "Metric"}
+                                        <FontAwesomeIcon 
+                                            className="rotate-icon" 
+                                            icon={faArrowsRotate} 
+                                        /> 
+                                        {isMetric ? "Imperial" : "Metric"}
                                     </button>
                                 </div>
                             </>
