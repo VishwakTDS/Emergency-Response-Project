@@ -1,0 +1,361 @@
+:root {
+  --bg: #111418;
+  --bg-alt: #171b22;
+  --card: rgba(23, 27, 34, 0.75);
+  --txt: #e4e8f0;
+  --accent: #16d4ff;
+  --accent-soft: #16d4ff44;
+  --radius: 12px;
+  --blur: 16px;
+  --card-height: 40vh;
+  --card-padding: 1.2rem;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  background: var(--bg);
+  color: var(--txt);
+  width: 100vw;
+  height: 100vh;
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+header {
+  padding: 1rem 2rem;
+  background: var(--bg-alt);
+  box-shadow: 0 1px 8px #000a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+h1 {
+  margin: auto;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.back-button {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+}
+
+/* Toggle Button */
+.unit-toggle {
+  background: var(--accent-soft);
+  border: none;
+  color: var(--accent);
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.25s, transform 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 1rem;
+}
+
+.unit-toggle:hover {
+  background: var(--accent);
+  color: #000;
+}
+
+.unit-toggle:active {
+  transform: scale(0.96);
+}
+
+.unit-toggle .rotate-icon {
+  transition: transform 0.75s cubic-bezier(.4,2,.6,1);
+}
+
+.unit-toggle.rotated .rotate-icon {
+  transform: rotate(180deg);
+}
+
+/* Responsive */
+main.grid {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  padding: 1.2rem 2rem;
+  gap: 1.2rem;
+  box-sizing: border-box;
+}
+
+.top, .bottom {
+  display: flex;
+  flex-direction: row;
+  gap: 1.2rem;
+}
+
+.top {
+  width: 100%;
+}
+
+/* Card */
+.card {
+  backdrop-filter: blur(var(--blur));
+  background: var(--card);
+  border: 1px solid #ffffff0d;
+  border-radius: var(--radius);
+  padding: var(--card-padding);
+  box-shadow: 0 6px 20px #00000040;
+  position: relative;
+  overflow: hidden;
+  height: var(--card-height);
+  margin: auto;
+  max-width: 33.33%;
+}
+
+/* subtle inner glow */
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(135deg, transparent, var(--accent-soft));
+  mix-blend-mode: overlay;
+  opacity: 0.4;
+}
+
+/* Leaflet Map */
+.map-card {
+  padding: 0;
+  margin: 0;
+  height: calc(var(--card-height) + 2 * var(--card-padding));
+  flex: 1 0 33.33%;
+  max-width: none;
+}
+
+.map-style {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius);
+}
+
+.mapstyle {
+  height: 100%;
+  width: 100%;
+}
+
+.leaflet-container{
+  background-color: #000;
+}
+
+.leaflet-layer,
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out{
+  filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(85%);
+}
+
+/* Removing credit attribution tag */
+.leaflet-control-attribution, .leaflet-control-scale-line {
+  display: none;
+}
+
+/* Weather card */
+.weather-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 0 0 240px;
+}
+
+.weather-main {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 2.6rem;
+  font-weight: 600;
+}
+
+.weather-icon svg {
+  display: flex;
+  align-items: center;
+  font-size: 3rem;
+  color: var(--accent);
+}
+
+.weather-details {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem 1rem;
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.weather-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.wind-elements {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.wind-arrow {
+  font-size: 2rem;
+  color: var(--txt);
+  transition: transform 0.3s;
+}
+
+.weather-hidden {
+  display: none;
+}
+
+/* Prediction Agent */
+.cause-prediction-card h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1.1rem;
+  color: var(--accent);
+}
+
+.agent-response {
+  max-height: 100%;
+  overflow: auto;
+  line-height: 1.45;
+}
+
+.agent-response::-webkit-scrollbar {
+  width: 0.4rem;
+}
+.agent-response::-webkit-scrollbar-thumb {
+  background: var(--accent-soft);
+  border-radius: var(--radius);
+}
+
+.loadingbar {
+  display: flex;
+  /* border: 1px solid red; */
+  /* padding: 5em; */
+  /* margin-left: 30vw; */
+  margin: auto;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.image-card {
+  padding: 0;
+  max-height: calc(var(--card-height) + 2 * var(--card-padding));
+  max-width: 100%;
+  width: fit-content;
+  height: fit-content; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-card img {
+  display: block;
+  max-width: 100%;
+  max-height: calc(var(--card-height) + 2 * var(--card-padding));
+  width: auto;
+  height: auto;
+}
+
+/* Popup Message */
+.popup-message {
+  display: block;
+  max-width: 100%;
+  max-height: var(--card-height);
+  width: auto;
+  height: auto;
+}
+
+.insights-card {
+  /* max-height: var(--card-height); */
+  /* max-width: 100%; */
+  width: fit-content;
+  height: fit-content; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: popup-appear 0.4s ease-out forwards;
+}
+
+/* .popup-message.green { color: #1e8e3e; }   safe   */
+/* .popup-message.red   { color: #d93025; }   alert  */
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+}
+
+/* Info Icon */
+.info-icon {
+  cursor: pointer;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 4px;
+  border-radius: 3px;
+  transition: background .15s;
+}
+
+.info-icon:hover {
+  background: rgba(0,0,0,.05);
+}
+
+.popup-more-info {
+  /* collapsed by default */
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.75s ease;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.popup-message.expanded .popup-more-info {
+  max-height: 400px; 
+}
+
+.popup-more-info-inner {
+  margin-top: 4px;
+}
+
+/* Alert Agent */
+.alert-card {
+  width: fit-content;
+  height: fit-content; 
+  animation: popup-appear 0.4s ease-out forwards;
+}
+
+@keyframes popup-appear {
+  from {
+    opacity: 0;
+    transform: translateY(20px);  /* start slightly lower */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Misc */
+a {
+  color: var(--accent);
+}
+strong {
+  color: var(--accent);
+}
