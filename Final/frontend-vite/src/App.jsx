@@ -1,18 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './App.css'
-import Spline from '@splinetool/react-spline';
 import GlobeComponent from './GlobeComponent';
 import FuturisticGlobe from './FuturisticGlobe';
 import HyperspeedBackground from './HyperspeedBackground';
+import Map from './Map'
 
-function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
-  const [file, setFile] = useState(null);
-  const [lat, setLat] = useState("");
-  const [lon, setLon] = useState("");
+function App({setCauseText, setInsights, setAlertText, setWeather, setIsLoading, setFile, setLat, setLon, file, lat, lon}) {
+  // const [lat, setLat] = useState("");
+  // const [lon, setLon] = useState("");
 
   
   const navigate = useNavigate();
+
+  // let newLat = 33.338;
+  // let newLon = -111.895;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,13 +64,14 @@ function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
           try        { obj = JSON.parse(line); } 
           catch (e)  { console.error("Bad JSON line:", line); continue; }
           
-          if (!gotFirstChunk) {
-            gotFirstChunk = true;
-            setIsLoading(false);
-          }
+          
 
           switch (obj.type) {
             case "cause_prediction":
+              if (!gotFirstChunk) {
+                gotFirstChunk = true;
+                setIsLoading(false);
+              }
               setCauseText(prev => prev + obj.data);
               break;
             case "insights":
@@ -77,6 +80,8 @@ function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
             case "alert":
               setAlertText(obj.data);
               break;
+            case "weather":
+              setWeather(obj.data);
             default:
               console.warn("Unknown chunk type:", obj.type);
           }
@@ -87,7 +92,7 @@ function App({setCauseText, setInsights, setAlertText, setIsLoading}) {
       setIsLoading(false);
     }
   };
-
+// style={{ padding: "2rem", maxWidth: "500px", margin: "auto" }}
   return (
     <div
       style={{

@@ -79,6 +79,10 @@ def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, api_ke
 
         Similar events : {top2}
 
+        \n\n
+
+        Weather API data : {api_data}
+
         """.strip()
 
         # prompt = ChatPromptTemplate.from_messages(

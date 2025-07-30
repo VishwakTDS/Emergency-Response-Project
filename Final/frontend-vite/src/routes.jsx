@@ -12,9 +12,11 @@ function Routing() {
     const [causeText,  setCauseText]  = useState("");
     const [insights,   setInsights]   = useState(null);
     const [alertText,  setAlertText]  = useState(null);
+    const [weather,  setWeather]  = useState(null);
 
     const [isLoading, setIsLoading] = useState(false);
 
+    const [file, setFile] = useState(null);
     const [lat, setLat] = useState("");
     const [lon, setLon] = useState("");
 
@@ -35,6 +37,12 @@ function Routing() {
                             setIsLoading={setIsLoading}
                             setLat={setLat}
                             setLon={setLon}
+                            setWeather={setWeather}
+                            setIsLoading={setIsLoading}
+                            setFile={setFile}
+                            setLat={setLat}
+                            setLon={setLon}
+                            file={file}
                             lat={lat}
                             lon={lon}
                         />
@@ -47,7 +55,9 @@ function Routing() {
                             causeText={causeText}
                             insights={insights}
                             alertText={alertText}
+                            weather={weather}
                             isLoading={isLoading}
+                            file={file}
                             lat={lat}
                             lon={lon}
                         />

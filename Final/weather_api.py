@@ -100,5 +100,5 @@ def current_weather(lat,long):
                     "current_wind_gusts_10m":current_wind_gusts_10m
                     }
 
-    current_json = json.dumps(current_df)
-    return current_json
+    # current_json = json.dumps(current_df)
+    return current_df
