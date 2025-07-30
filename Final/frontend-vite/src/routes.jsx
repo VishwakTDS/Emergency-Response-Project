@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import App from "./App";
 import LLM_Output from "./llm_output";
+import Home from "./Home";
 
 function Routing() {
     const [causeText,  setCauseText]  = useState("");
@@ -24,11 +25,18 @@ function Routing() {
             <Routes>
                 <Route 
                     path="/" 
+                    element={<Home />} 
+                />
+                <Route 
+                    path="/globe" 
                     element={
                         <App
                             setCauseText={setCauseText}
                             setInsights={setInsights}
                             setAlertText={setAlertText}
+                            setIsLoading={setIsLoading}
+                            setLat={setLat}
+                            setLon={setLon}
                             setWeather={setWeather}
                             setIsLoading={setIsLoading}
                             setFile={setFile}
