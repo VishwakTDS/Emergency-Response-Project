@@ -82,6 +82,7 @@ function App({setCauseText, setInsights, setAlertText, setWeather, setIsLoading,
               break;
             case "weather":
               setWeather(obj.data);
+              break;
             default:
               console.warn("Unknown chunk type:", obj.type);
           }
@@ -135,31 +136,33 @@ function App({setCauseText, setInsights, setAlertText, setWeather, setIsLoading,
             padding: 0
           }}
         >
-          <h2
-            style={{
-              color: '#f5e9d7',
-              fontWeight: 700,
-              fontSize: '2.2rem',
-              marginBottom: 24,
-              letterSpacing: '0.01em',
-              lineHeight: 1.1
-            }}
-          >
-            Emergency Incident<br />Upload
-          </h2>
-          <label style={{ color: '#f5e9d7', fontSize: '1.1rem', marginBottom: 8 }}>
-            <input
-              type="file"
+          <form onSubmit={handleSubmit}>
+            <h2
               style={{
-                background: 'none',
                 color: '#f5e9d7',
-                border: 'none',
-                fontSize: '1rem',
-                marginBottom: 4 // much smaller space
+                fontWeight: 700,
+                fontSize: '2.2rem',
+                marginBottom: 24,
+                letterSpacing: '0.01em',
+                lineHeight: 1.1
               }}
-            />
-          </label>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: 220 }}>
+            >
+              Emergency Incident<br />Upload
+            </h2>
+            <label style={{ color: '#f5e9d7', fontSize: '1.1rem', marginBottom: 8 }}>
+              <input
+                type="file"
+                onChange={(e) => setFile(e.target.files[0])}
+                style={{
+                  background: 'none',
+                  color: '#f5e9d7',
+                  border: 'none',
+                  fontSize: '1rem',
+                  marginBottom: 4 // much smaller space
+                }}
+              />
+            </label>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: 220 }}>
   {/* Latitude */}
   <label
     htmlFor="latitude"
@@ -226,21 +229,23 @@ function App({setCauseText, setInsights, setAlertText, setWeather, setIsLoading,
     }}
   />
 </div>
-          <button
-            style={{
-              background: 'rgba(0,0,0,0.6)',
-              color: '#f5e9d7',
-              border: '1px solid #f5e9d7',
-              borderRadius: 24,
-              padding: '10px 32px',
-              fontSize: '1.1rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'background 0.2s'
-            }}
-          >
-            Submit
-          </button>
+            <button
+              type="submit"
+              style={{
+                background: 'rgba(0,0,0,0.6)',
+                color: '#f5e9d7',
+                border: '1px solid #f5e9d7',
+                borderRadius: 24,
+                padding: '10px 32px',
+                fontSize: '1.1rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'background 0.2s'
+              }}
+            >
+              Submit
+            </button>
+          </form>
         </div>
       </div>
       {/* Right panel */}
