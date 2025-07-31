@@ -1,7 +1,5 @@
-import io
 import tempfile
 
-from PIL import Image
 import json
 from config import *
 import time
@@ -12,67 +10,31 @@ from cause_prediction_llm import cause_prediction_LLM
 from vila_image_summarizer import image_summarizer
 from insights_agent import insights_agent
 from alert_agent import dispatch_to_responders, alert_agencies, build_alert_payload
+from uuid import uuid4
+import shutil
 
 # Process the POST input
-def input_processing(request):
+def input_processing(data):
 
-    # Check whether required media file was provided
-    if 'input_media' not in request.files:
-        err = f"Media file not provided in the request"
+    # Check latitude range
+    if data.latitude < -90 or data.latitude > 90:
+        err = f"Latitude must be between -90 and 90"
+        print(f"error: {err}")
+        raise Exception(err)
+
+    # Check longitude range
+    if data.longitude < -180 or data.longitude > 180:
+        err = f"Longitude must be between -90 and 90"
         print(f"error: {err}")
         raise Exception(err)
     
-    # Check whether required coordinates were provided
-    if 'latitude' not in request.form or 'longitude' not in request.form:
-        err = f"Required coordinates were not provided"
-        print(f"error: {err}")
-        raise Exception(err)
-    
-    # Process media file to correct format
-    imgfile = request.files['input_media']
+    # Save image in a temporary file in memory for further processing
+    img_format = f'.{data.input_media.content_type.split("/")[-1]}'
 
-    raw_bytes = imgfile.read()
-    if len(raw_bytes) == 0:
-        err = "Empty media file uploaded"
-        print(f"error: {err}")
-        raise Exception(err)
+    with tempfile.NamedTemporaryFile(delete=False, suffix=img_format) as tmpimg:
+        shutil.copyfileobj(data.input_media.file, tmpimg)
 
-    try:
-        img = Image.open(io.BytesIO(raw_bytes))
-        img_format = img.format
-
-    except Exception as e:
-        err = "Unable to open media file"
-        print(f"error: {err}:\n{e}")
-        raise Exception(err) from e
-
-    formats = {"jpg","png","jpeg","mp4"}
-
-    img_format = img_format.lower()
-
-    if img_format not in formats:
-        err = f"Media file is of an unsupported format"
-        print(f"error: {err}")
-        raise Exception(err)
-
-    extension = img_format.lower()
-
-    # Store uploaded media file in a temporary filename and path
-    with tempfile.NamedTemporaryFile(delete=False, suffix=f".{extension}") as tmpimg:
-        tmpimg.write(raw_bytes)
-        tmpimg_path = tmpimg.name
-
-
-    # Get provided coordinates
-    latitude = request.form['latitude']
-    longitude = request.form['longitude']
-
-    print(f"Coordinates: lat:{latitude}, long:{longitude}")
-
-    print(f"Image path: {tmpimg_path}")
-
-    return tmpimg_path, latitude, longitude
-    
+    return tmpimg
 
 def response_generator(img, lat, lon):
     # Connect to database
