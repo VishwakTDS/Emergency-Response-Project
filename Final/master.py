@@ -1,4 +1,5 @@
 import tempfile
+import json
 
 import json
 from config import *
@@ -37,6 +38,23 @@ def input_processing(data):
     return tmpimg
 
 def response_generator(img, lat, lon):
+    # calling weather API
+    current_weather_df = current_weather(lat,lon)
+    current_weather_string = json.dumps(current_weather_df)
+    print(current_weather_string)
+    yield json.dumps({"type": "weather", "data": current_weather_df},
+                        ensure_ascii=False) + "\n"
+    hourly_weather_json = hourly_weather(lat,lon)
+    weather_api_data = ""
+    if current_weather_string :
+        weather_api_data += """
+        Current weather data:
+        """+ current_weather_string
+    # if hourly_weather_json:
+    #     weather_api_data += """\n
+    #     Hourly weather Data:
+    #     """+ hourly_weather_json
+    
     # Connect to database
     # try:
     #     results = connection_sql(sql_database)
@@ -63,6 +81,7 @@ def response_generator(img, lat, lon):
     print("Image summary:")
     print(image_summary)
     print('\n\n----------\n\n')
+
 
     #################################################
     ########## Hardcoded Now, change Later ########## 
@@ -167,12 +186,14 @@ def response_generator(img, lat, lon):
 
     # Alert LLM
     try:
+
         agencies = insights_agent_output_json.get("agency","")
         # print("AGENCIES: ", agencies)
         messages = insights_agent_output_json.get("messages","")
         # print("MESSAGE TO AGENCIES: ", messages)
 
         print("Alert LLM:")
+
 
         if agencies:
             agency_res = build_alert_payload(cause_prediction_llm_output, messages, agencies, lat, lon, json.loads(current_weather_json))
@@ -183,6 +204,7 @@ def response_generator(img, lat, lon):
         # if agency_res:
         #     yield json.dumps({"type": "alert", "data": agency_res},
         #                 ensure_ascii=False) + "\n"
+
 
     
     except Exception as e:

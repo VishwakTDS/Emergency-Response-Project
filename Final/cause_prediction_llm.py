@@ -4,6 +4,7 @@
 # from langchain_core.runnables import RunnableParallel
 # from langchain_nvidia_ai_endpoints import ChatNVIDIA
 
+
 # def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, api_data=None, location):
 #     try:
 #         llm = ChatNVIDIA(model=cause_prediction_llm_model)
@@ -114,6 +115,7 @@ def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, locati
     threat = image_summary["threat_type"]
     valid_causes = fetch_valid_causes(threat)
 
+
     try:
         # llm = ChatNVIDIA(model=cause_prediction_llm_model)
 
@@ -123,6 +125,7 @@ def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, locati
 
         You will be provided with the following information by the user:
             - Image summary
+
                 Image summary is the summary of an image which may or may not depict a threat. YOu will be provided by the threat-type detected based on image.
                 You will also be provided with the probability of whether the provided image depicts a threat or emergency.
                 This probability is based entirely on the context provided by the image.
@@ -165,6 +168,7 @@ def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, locati
         - Do NOT output explanations, code fences or extra keys.  
         - Responses must be in English.
 
+
         """.strip()
 
         user_prompt = f"""
@@ -172,6 +176,7 @@ def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, locati
         ################################
         ## Context (dynamic data provided by the user) ##
         ##############################
+
 
         Image summary : {image_summary["image_summary"]}
 
@@ -192,6 +197,7 @@ def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, locati
         \n\n
 
         Cause List : {valid_causes}
+
 
         """.strip()
 
@@ -229,6 +235,7 @@ def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, locati
 
         # for tok in agent1_causepredict(prompt, cause_prediction_llm_model, api_key):
         #     yield tok
+
 
 
 

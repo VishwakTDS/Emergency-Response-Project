@@ -20,8 +20,16 @@ def agent2_llama(messages,insights_agents_model):
         frequency_penalty=0,
         presence_penalty=0,
         stream=False
+
     )
+
+    # for tok in res:
+        # print(tok.choices[0].delta.content)
+        # print(tok)
+        # yield tok.choices[0].delta.content
+
     return res.choices[0].message.content
+
 
 def insights_agent(image_summary, weather_data, insights_agents_model, history_summary, agencies_alerted, DRONE_AVAILABLE):
 
@@ -38,9 +46,9 @@ def insights_agent(image_summary, weather_data, insights_agents_model, history_s
     - PROBABILITY: {image_summary['probability']}
 
     ##############################
-    ## 2. Available commands    ##
+    ## 1. Available commands    ##
     ##############################
-    Return **exactly ONE** of the following JSON objects—nothing else, no Markdown, no commentary, no newlines before/after the braces:
+    Return exactly ONE of the following JSON objects. Nothing else, no Markdown, no commentary, no newlines before/after the braces:
 
     • Launch a drone (ONLY IF drone is available AND 0.4 < probability < 0.8 ELSE call first responders)
     {{"action":"launch_drone","lat":<lat>,"lon":<lon>,"messages":[Whole report of situation, with all data along with steps to be taken to responders]}}
@@ -54,23 +62,23 @@ def insights_agent(image_summary, weather_data, insights_agents_model, history_s
     The JSON must contain only the keys shown above and must be valid (double-quoted strings, numeric lat/lon). 
 
     ##############################
-    ## 3. Decision rules        ##
+    ## 2. Decision rules        ##
     ##############################
     Let P = hazards.fire.prob (a float between 0-1) FROM given PROBABILITY
 
     If "weather" exists in the input:
-    • If weather.wind_kph   > 25 → P += 0.10  
-    • If weather.apparent_c > 32 → P += 0.05  
+        - If weather.wind_kph   > 25 → P_threat += 0.10
+        - If weather.apparent_c > 32 → P_threat += 0.05
 
-    Clamp P to a maximum of 1.0.
+    Clamp P_threat to a maximum of 1.0.
 
     Decision:
-    • If P ≥ 0.80               → call_first_responders with agency="fire_brigade"  
-    • If 0.40 ≤ P < 0.80        → launch_drone  
-    • If P < 0.40               → no_emergency
+    • If P_threat ≥ 0.80               → call_first_responders with the appropriate agency
+    • If 0.40 ≤ P_threat < 0.80        → launch_drone
+    • If P_threat < 0.40               → no_emergency
 
     ##############################
-    ## 4. Forbidden behavior    ##
+    ## 3. Forbidden behavior    ##
     ##############################
     × Do NOT output explanations, headings, or any extra characters.  
     × Do NOT add new keys or nested objects.  
@@ -80,10 +88,10 @@ def insights_agent(image_summary, weather_data, insights_agents_model, history_s
     X **Do NOT Launch Drone** when **P >= 0.8**
 
     ##############################
-    ## 5. Worked examples       ##
+    ## 4. Worked examples       ##
     ##############################
 
-    Example A (P high, no weather):
+    Example A (P_threat high, no weather):
     Input snippet:
     hazards.fire.prob = 0.85
     OR
@@ -103,9 +111,9 @@ def insights_agent(image_summary, weather_data, insights_agents_model, history_s
 
     Example C (P low even after weather):
     Input snippet:
-    hazards.fire.prob = 0.25
-    weather.wind_kph = 10
-    weather.apparent_c = 22
+        Probability = 0.25
+        weather.wind_kph = 10
+        weather.apparent_c = 22
     Expected output:
     {{"action":"no_emergency","messages": No Emergency Detected}}
 
@@ -125,7 +133,9 @@ def insights_agent(image_summary, weather_data, insights_agents_model, history_s
     
     prompt = [
         {"role":"system",
-         "content":prompt_content}
+         "content":system_prompt},
+        {"role":"user",
+         "content":user_prompt}
     ]
     nemo_out = agent2_llama(prompt, insights_agents_model)
 

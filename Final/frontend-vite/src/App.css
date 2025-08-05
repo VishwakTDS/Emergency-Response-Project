@@ -1,11 +1,11 @@
-#root {
+/* #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-}
+} */
 
-.logo {
+/* .logo {
   height: 6em;
   padding: 1.5em;
   will-change: filter;
@@ -16,6 +16,73 @@
 }
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
+} */
+
+.parentdiv {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.inputform-map {
+  display: flex;
+  position: fixed;
+  margin-left: 0;
+  margin-top: 0;
+  height: 100vh;
+  width: 30vw;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  /* background-color: #BFBFBF; */
+  padding: 2rem;
+  /* box-shadow: 2px 0; */
+}
+
+.onlyform {
+  color: #000;
+}
+
+.map-style {
+  margin-top: 2rem;
+  width: 100%;
+  /* height: 200px; */
+}
+
+/* .mapstyle {
+  height: 20px;
+  width: 30vw;
+} */
+
+
+.input-field {
+  background-color: white;
+  color: black;
+  /* color: white; */
+}
+
+.submit-button {
+  background-color: #b5b5b5;
+  color: #000000;
+  /* padding: 10px 20px; */
+  /* border-radius: 5px; */
+}
+
+#formId::file-selector-button {
+  background-color: white;
+  color: black;
+}
+
+
+.homepage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid black;
+  margin: 0 auto;
+  min-width: 100vw;
 }
 
 @keyframes logo-spin {
