@@ -34,7 +34,7 @@ const prettify = s =>
 
 function BackButton() {
   return (
-    <Link to="/" className="back-btn">
+    <Link to="/globe" className="back-btn">
       Back
     </Link>
   );
