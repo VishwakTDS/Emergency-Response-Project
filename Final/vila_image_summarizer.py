@@ -3,46 +3,47 @@ import os
 import requests
 import json
 import uuid
-
+from sql_connection import fetch_threat_info
 import pandas as pd
 import numpy as np
 
 
 def image_summarizer(uploaded_file, api_key):
-    vila_prompt = """
-    You are an Image Summarizer Agent for an Emergency Response System.
-    
-    You will be provided with an image by the user.
-    Your objective is to analyze the provided image and provide a detailed summary focusing on elements relevant to incident assessment and response.
+    threats = fetch_threat_info()
 
-    The summary should include:
-    - Scene Description and Environment: Describe the overall environment (e.g., urban, rural, industrial, natural landscape), the visible terrain, and any significant features like structures, vehicles, or natural elements. Note the time of day or lighting conditions.
-    - Incident Characteristics: Identify the type of incident (e.g., accident, hazard, natural disaster, security event). Describe its apparent scale, severity, and any visible progression or impact.
-    - Visible Entities and Activities: List any people, vehicles, equipment, or other relevant objects present in the image. Describe their roles or activities, if discernible (e.g., responders, victims, bystanders, operational tasks).
-    - Hazards, Risks & Damage: Detail any immediate or potential hazards (e.g., smoke, debris, spills, instability, exposed elements) and any visible damage to property, infrastructure, or the environment.
-    - Contextual Clues: Point out any signs, markings, or other visual cues that provide additional context about the incident (e.g., license plates, company logos, warning signs, weather indicators).
-    - Inferred Urgency & Priority: Based on the visual evidence, infer the immediate urgency of the situation and suggest potential priorities for response (e.g., life safety, containment, damage control).
-    - Key Elements (Concise List): Provide a brief, bulleted list of the most critical elements identified that define the situation.
-    
+    vila_prompt = f"""
+    Analyze this image and provide a detailed summary focusing on elements relevant to incident assessment and response. The summary should include:
+    Scene Description & Environment: Describe the overall environment (e.g., urban, rural, industrial, natural landscape), the visible terrain, and any significant features like structures, vehicles, or natural elements. Note the time of day or lighting conditions.
+    Incident Characteristics: Identify the type of incident (e.g., accident, hazard, natural disaster, security event). Describe its apparent scale, severity, and any visible progression or impact.
+    Visible Entities & Activities: List any people, vehicles, equipment, or other relevant objects present in the image. Describe their roles or activities, if discernible (e.g., responders, victims, bystanders, operational tasks).
+    Hazards, Risks & Damage: Detail any immediate or potential hazards (e.g., smoke, debris, spills, instability, exposed elements) and any visible damage to property, infrastructure, or the environment.
+    Contextual Clues: Point out any signs, markings, or other visual cues that provide additional context about the incident (e.g., license plates, company logos, warning signs, weather indicators).
+    Inferred Urgency & Priority: Based on the visual evidence, infer the immediate urgency of the situation and suggest potential priorities for response (e.g., life safety, containment, damage control).
+    Key Elements (Concise List): Provide a brief, bulleted list of the most critical elements identified that define the situation.
     The summary should be objective, descriptive, and focus on providing concrete observations that would inform a rapid response or further investigation.
-    
-    Once you have completely assesed the image, use all the context you have to generate a probability.
-    The probability is supposed to indicate how strongly you think the image you received depicts a threat or an emergency situation.
+    Identify the threat_type from given list of threats or mention  **Undefined** for unrelated threats: [{threats}]
+    Also generate the probability/confidence of threat based on severity of the incident from the image.
     Give the answer in json format, no extra information.
 
-    NUMERIC FORMAT:
-    - Probabilities must be written with ONLY two decimals (e.g. 0.03, 0.58, 0.97, 0.40).
-    - Avoid rounding everything to extremes like 0.00 or 1.00 unless highly certain.
-
-    Keep the image summary under 400 words.
-
-    OUTPUT FORMAT IN JSON:
-    {
+    NUMERIC FORMAT - Probabilities must be written with **two decimals**.  
+    Probability guidelines:
+    Base “probability” on how clear and severe the danger is: 
+    - 0.0 for no emergency conditions. 
+    - 0.40 for any visible hazard (rampaging creature, rising water, smoke, etc.)  
+    - 0.97 for an active emergency/ hazar or calamity in progress which can lead to severe impact on lives.
+    - 1.00 only for absolute, undeniable crisis  
+    
+    • **Always format probability with two decimals** 
+    
+    Keep image summary under 200 words.
+    
+    **OUTPUT/JSON FORMAT**:
+    {{i
         "image_summary":[summary of image]
-        "probablity":[probablity/confidence that the input depicts an emergency/threat]
-    } 
-
-    """.strip()
+        "threat_type": [Type of threat from given list or Undefined]
+        "probability":[probability/confidence of the threat severity]
+    }} 
+    """
     
     media_samples = [uploaded_file]
 
