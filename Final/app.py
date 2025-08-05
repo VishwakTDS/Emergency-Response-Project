@@ -86,13 +86,13 @@ class EmergencyInput(BaseModel):
 # requests = {}
 
 @app.post("/response/v1")
-async def receive_data(data: Annotated[EmergencyInput, Form()]):
+def receive_data(data: Annotated[EmergencyInput, Form()]):
     try:
         data.id = uuid4()
 
         temp_media = input_processing(data)
 
-        async def generate():
+        def generate():
             for chunk in response_generator(temp_media.name, data.latitude, data.longitude):
                 # each chunk is already a dict or list
                 yield f"data: {json.dumps(chunk, ensure_ascii=False)}\n\n"

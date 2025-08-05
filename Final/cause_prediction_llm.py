@@ -66,15 +66,16 @@
 from openai import OpenAI
 from embeddings_reranker import format_incidents
 from sql_connection import fetch_valid_causes
+from clients import client
 import json
 
 
-def agent1_causepredict(messages, cause_prediction_llm_model, api_key_n):
+def agent1_causepredict(messages, cause_prediction_llm_model):
     
-    client = OpenAI(
-        base_url = "https://integrate.api.nvidia.com/v1",
-        api_key = api_key_n
-    )
+    # client = OpenAI(
+    #     base_url = "https://integrate.api.nvidia.com/v1",
+    #     api_key = api_key_n
+    # )
 
     res = client.chat.completions.create(
         model=cause_prediction_llm_model,
@@ -104,7 +105,7 @@ def agent1_causepredict(messages, cause_prediction_llm_model, api_key_n):
 
     # return res.choices[0].message.content
 
-def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, api_key, location, api_data=None):
+def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, location, api_data=None):
     if top2 == None:
         context = "No similar events found"
     else:
@@ -222,7 +223,7 @@ def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, api_ke
          "content":user_prompt}
         ]
 
-        result_json = agent1_causepredict(prompt, cause_prediction_llm_model, api_key)
+        result_json = agent1_causepredict(prompt, cause_prediction_llm_model)
         parsed = json.loads(result_json)
         return parsed
 

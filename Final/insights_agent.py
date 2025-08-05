@@ -1,13 +1,14 @@
 from openai import OpenAI
 import json
 from sql_connection import fetch_sops
+from clients import client
 
-def agent2_llama(messages,insights_agents_model, api_key_n):
+def agent2_llama(messages,insights_agents_model):
     
-    client = OpenAI(
-        base_url = "https://integrate.api.nvidia.com/v1",
-        api_key = api_key_n
-    )
+    # client = OpenAI(
+    #     base_url = "https://integrate.api.nvidia.com/v1",
+    #     api_key = api_key_n
+    # )
 
     res = client.chat.completions.create(
         model=insights_agents_model,
@@ -22,7 +23,7 @@ def agent2_llama(messages,insights_agents_model, api_key_n):
     )
     return res.choices[0].message.content
 
-def insights_agent(image_summary, weather_data, insights_agents_model, history_summary, agencies_alerted, api_key, DRONE_AVAILABLE):
+def insights_agent(image_summary, weather_data, insights_agents_model, history_summary, agencies_alerted, DRONE_AVAILABLE):
 
     prompt_content = f"""
     You are Emergency-Reasoning-Agent.
@@ -126,7 +127,7 @@ def insights_agent(image_summary, weather_data, insights_agents_model, history_s
         {"role":"system",
          "content":prompt_content}
     ]
-    nemo_out = agent2_llama(prompt, insights_agents_model, api_key)
+    nemo_out = agent2_llama(prompt, insights_agents_model)
 
     #nemo_out = nemo_out.replace("```json","").replace("```","")
 

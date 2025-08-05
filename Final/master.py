@@ -121,13 +121,13 @@ def response_generator(img, lat, lon):
             #     yield json.dumps({"type": "cause_prediction", "data": tok},
             #                  ensure_ascii=False) + "\n"
             # cause_prediction_llm_output = "".join(cause_prediction_llm_buffer)
-            cause_prediction_llm_output = cause_prediction_LLM(top_match, cause_prediction_llm_model, summary, api_key_nvd, location, weather_api_data.strip())
+            cause_prediction_llm_output = cause_prediction_LLM(top_match, cause_prediction_llm_model, summary, location, weather_api_data.strip())
             print("\n\nCause prediction LLM:")
             print(cause_prediction_llm_output)
             print('\n\n----------\n\n')
 
         # Insights LLM
-            insights_agent_output_json = insights_agent(summary, weather_api_data.strip(), insights_agents_model, cause_prediction_llm_output, agencies_alerted, api_key_nvd, DRONE_AVAILABLE)
+            insights_agent_output_json = insights_agent(summary, weather_api_data.strip(), insights_agents_model, cause_prediction_llm_output, agencies_alerted, DRONE_AVAILABLE)
             
             # insights_agent_output = "".join(insights_llm_buffer)
             print("\n\nInsights LLM:")
