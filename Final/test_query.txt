@@ -1,0 +1,73 @@
+CREATE TABLE IF NOT EXISTS detected_events (
+  event_id            SERIAL PRIMARY KEY,
+  image_ref           TEXT            NOT NULL,    
+  threat_id           INTEGER         NOT NULL
+    REFERENCES threats(threat_id)     ON DELETE CASCADE,
+  detected_cause      TEXT            NOT NULL,       
+  ics_level           INTEGER         NOT NULL,       
+  agencies_suggested  INTEGER[]       NOT NULL,       
+  sops_suggested      INTEGER[]       NOT NULL,      
+  processed_at        TIMESTAMP       NOT NULL DEFAULT now()
+);
+
+WITH sel AS (
+  SELECT threat_id
+    FROM threats
+   WHERE threat_name='Wildfire'
+     AND threat_cause='Dry weather'
+)
+, ag AS (
+  SELECT ARRAY_AGG(agency_id) AS arr
+    FROM sops
+   WHERE threat_id=(SELECT threat_id FROM sel)
+     AND ics_level=3
+)
+, sp AS (
+  SELECT ARRAY_AGG(sop_id) AS arr
+    FROM sops
+   WHERE threat_id=(SELECT threat_id FROM sel)
+     AND ics_level=3
+)
+
+INSERT INTO detected_events (
+  image_ref,
+  threat_id,
+  detected_cause,
+  ics_level,
+  agencies_suggested,
+  sops_suggested
+)
+SELECT
+  'img://test/dry-weather-001.jpg',
+  (SELECT threat_id FROM sel),
+  'Dry weather',
+  3,
+  ag.arr,
+  sp.arr
+FROM ag, sp;
+
+SELECT
+  d.event_id,
+  t.threat_name,
+  t.threat_cause,
+  d.ics_level,
+  d.agencies_suggested,
+  d.sops_suggested,
+  d.processed_at
+FROM detected_events d
+JOIN threats t ON d.threat_id = t.threat_id;
+
+CREATE OR REPLACE VIEW event_agency_sops AS
+SELECT
+  d.event_id,
+  a.agency_name,
+  s.standard_operating_procedure,
+  s.resources_required
+FROM detected_events d
+  CROSS JOIN LATERAL unnest(d.agencies_suggested) AS ag_id
+  JOIN agencies a ON a.agency_id = ag_id
+  LEFT JOIN sops s
+    ON s.threat_id = d.threat_id
+   AND s.ics_level = d.ics_level
+   AND s.agency_id = ag_id;
+
