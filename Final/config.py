@@ -20,3 +20,8 @@ sql_host = os.environ.get("SQL_HOST_IP", "192.168.24.2")
 
 # Input API Key
 api_key_nvd = os.environ.get("NVIDIA_API_KEY", "")
+
+# Send email
+sender_email = os.environ.get("SENDER_EMAIL", "")
+receiver_email = os.environ.get("RECEIVER_EMAIL", "")
+sender_password = os.environ.get("SENDER_PASSWORD", "")

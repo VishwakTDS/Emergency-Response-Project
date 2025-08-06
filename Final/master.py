@@ -1,6 +1,7 @@
 import io
 import tempfile
 import json
+import string
 
 from PIL import Image
 
@@ -13,6 +14,7 @@ from cause_prediction_llm import cause_prediction_LLM
 from vila_image_summarizer import image_summarizer
 from insights_agent import insights_agent
 from alert_agent import dispatch_to_responders
+from send_email import send_email
 
 # Process the POST input
 def input_processing(request):
@@ -192,6 +194,7 @@ def response_generator(img, lat, lon):
 
         agencies = insights_agent_output_json.get("agency","")
         messages = insights_agent_output_json.get("messages","")
+        action = insights_agent_output_json.get("action","")
 
         print("Alert LLM:")
 
@@ -206,6 +209,14 @@ def response_generator(img, lat, lon):
         if agency_res:
             yield json.dumps({"type": "alert", "data": agency_res},
                         ensure_ascii=False) + "\n"
+            
+            # Send email
+            pretty_action = string.capwords(action.replace('_', ' '))
+            subject = f"Alert from ARES - {pretty_action}"
+
+            pretty_agencies = string.capwords(agencies.replace('_', ' '))
+            body = f"Agencies: {pretty_agencies}\nLocation: ({lat}, {lon})\nMessage: {'\n'.join(messages)}"
+            send_email(subject, body, img)
 
     
     except Exception as e:
