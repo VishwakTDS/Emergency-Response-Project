@@ -40,9 +40,9 @@ export default function Home() {
           color: 'white',        // Or your preferred color
           marginBottom: '0.5em'
         }}>
-          EmergenAI
+          ARES
         </h1>
-        <h3>Automated Emergency Response Platform</h3>
+        <h3>Agentic Responder for Emergency Situations</h3>
         <h4>Powered by TD Synnex</h4>
         <button
           style={{

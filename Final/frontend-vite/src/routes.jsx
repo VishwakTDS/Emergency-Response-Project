@@ -34,9 +34,6 @@ function Routing() {
                             setCauseText={setCauseText}
                             setInsights={setInsights}
                             setAlertText={setAlertText}
-                            setIsLoading={setIsLoading}
-                            setLat={setLat}
-                            setLon={setLon}
                             setWeather={setWeather}
                             setIsLoading={setIsLoading}
                             setFile={setFile}
