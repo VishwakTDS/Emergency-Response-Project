@@ -229,23 +229,25 @@ const LLM_Output = ({ causeText, insights, alertText, weather, isLoading, file, 
 
                             {insights &&
                                 <section className="card insights-card">
-                                    <PopupMessage
-                                        isAlert={!!insights.agency}
-                                        message={
-                                            insights?.action && (
-                                                <div className="insights-output-action">
-                                                    <strong>Action:</strong> {prettify(insights.action)}
-                                                </div>
-                                            )
-                                        }
-                                        moreInfo={
-                                            insights?.messages && (
-                                                <div className="insights-output-messages">
-                                                    <strong>Messages:</strong> <ReactMarkdown remarkPlugins={[remarkGfm]}>{insights.messages.join('\n\n')}</ReactMarkdown>
-                                                </div>
-                                            )
-                                        }
-                                    />
+                                    <div className="agent-response">
+                                        <PopupMessage
+                                            isAlert={!!insights.agency}
+                                            message={
+                                                insights?.action && (
+                                                    <div className="insights-output-action">
+                                                        <strong>Action:</strong> {prettify(insights.action)}
+                                                    </div>
+                                                )
+                                            }
+                                            moreInfo={
+                                                insights?.messages && (
+                                                    <div className="insights-output-messages">
+                                                        <strong>Messages:</strong> <ReactMarkdown remarkPlugins={[remarkGfm]}>{insights.messages.join('\n\n')}</ReactMarkdown>
+                                                    </div>
+                                                )
+                                            }
+                                        />
+                                    </div>
                                 </section>
                             }
                             
