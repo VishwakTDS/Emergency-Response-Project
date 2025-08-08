@@ -12,20 +12,27 @@ def image_summarizer(uploaded_file, api_key):
     threats = fetch_threat_info()
 
     vila_prompt = f"""
+    You are an Image Summarizer Agent for an Emergency Response System.
+
     Analyze this image and provide a detailed summary focusing on elements relevant to incident assessment and response. The summary should include:
-    Scene Description & Environment: Describe the overall environment (e.g., urban, rural, industrial, natural landscape), the visible terrain, and any significant features like structures, vehicles, or natural elements. Note the time of day or lighting conditions.
-    Incident Characteristics: Identify the type of incident (e.g., accident, hazard, natural disaster, security event). Describe its apparent scale, severity, and any visible progression or impact.
-    Visible Entities & Activities: List any people, vehicles, equipment, or other relevant objects present in the image. Describe their roles or activities, if discernible (e.g., responders, victims, bystanders, operational tasks).
-    Hazards, Risks & Damage: Detail any immediate or potential hazards (e.g., smoke, debris, spills, instability, exposed elements) and any visible damage to property, infrastructure, or the environment.
-    Contextual Clues: Point out any signs, markings, or other visual cues that provide additional context about the incident (e.g., license plates, company logos, warning signs, weather indicators).
-    Inferred Urgency & Priority: Based on the visual evidence, infer the immediate urgency of the situation and suggest potential priorities for response (e.g., life safety, containment, damage control).
-    Key Elements (Concise List): Provide a brief, bulleted list of the most critical elements identified that define the situation.
+    - Scene Description & Environment: Describe the overall environment (e.g., urban, rural, industrial, natural landscape), the visible terrain, and any significant features like structures, vehicles, or natural elements. Note the time of day or lighting conditions.
+    - Incident Characteristics: Identify the type of incident (e.g., accident, hazard, natural disaster, security event). Describe its apparent scale, severity, and any visible progression or impact.
+    - Visible Entities & Activities: List any people, vehicles, equipment, or other relevant objects present in the image. Describe their roles or activities, if discernible (e.g., responders, victims, bystanders, operational tasks).
+    - Hazards, Risks & Damage: Detail any immediate or potential hazards (e.g., smoke, debris, spills, instability, exposed elements) and any visible damage to property, infrastructure, or the environment.
+    - Contextual Clues: Point out any signs, markings, or other visual cues that provide additional context about the incident (e.g., license plates, company logos, warning signs, weather indicators).
+    - Inferred Urgency & Priority: Based on the visual evidence, infer the immediate urgency of the situation and suggest potential priorities for response (e.g., life safety, containment, damage control).
+    - Key Elements (Concise List): Provide a brief, bulleted list of the most critical elements identified that define the situation.
+
     The summary should be objective, descriptive, and focus on providing concrete observations that would inform a rapid response or further investigation.
+
     Identify the threat_type from given list of threats or mention  **Undefined** for unrelated threats: [{threats}]
+
     Also generate the probability/confidence of threat based on severity of the incident from the image.
     Give the answer in json format, no extra information.
 
-    NUMERIC FORMAT - Probabilities must be written with **two decimals**.  
+
+    NUMERIC FORMAT- Probabilities must be written with **two decimals**.  
+
     Probability guidelines:
     Base “probability” on how clear and severe the danger is: 
     - 0.0 for no emergency conditions. 
@@ -35,7 +42,7 @@ def image_summarizer(uploaded_file, api_key):
     
     • **Always format probability with two decimals** 
     
-    Keep image summary under 200 words.
+    Keep image summary under 400 words.
     
     **OUTPUT/JSON FORMAT**:
     {{i

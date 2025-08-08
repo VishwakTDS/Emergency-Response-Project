@@ -76,19 +76,32 @@ def agent1_causepredict(messages, cause_prediction_llm_model):
     #     base_url = "https://integrate.api.nvidia.com/v1",
     #     api_key = api_key_n
     # )
-
+    print("\n\nI am here\n\n")
     res = client.chat.completions.create(
         model=cause_prediction_llm_model,
         messages=messages,
         temperature=0.6,
-        response_format={"type": "json_object"},
+        # response_format={"type": "json_object"},
         top_p=0.95,
         max_tokens=4096,
         frequency_penalty=0,
         presence_penalty=0,
-        stream=False
+        stream=True
     )
-    return res.choices[0].message.content
+    for tok in res:
+        # print(tok.choices[0].delta.content)
+        # print(tok.choices[0].delta.content)
+        yield tok.choices[0].delta.content
+
+    # full_response = ""
+    # for tok in res:
+    #     delta = tok.choices[0].delta.content or ""
+    #     # print(delta, end="", flush=True)   # print each chunk as it arrives
+    #     full_response += delta
+
+    # return res.choices[0].message.content
+    # print(f"\n\nPRINTING FIRST FULL RESPONSE\n\n{full_response}\n\n")
+    # return full_response
 
     # for tok in res:
     #     # print(tok.choices[0].delta.content)
@@ -223,9 +236,25 @@ def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, locati
          "content":user_prompt}
         ]
 
-        result_json = agent1_causepredict(prompt, cause_prediction_llm_model)
-        parsed = json.loads(result_json)
-        return parsed
+        # full_response = ""
+
+        for tok in agent1_causepredict(prompt, cause_prediction_llm_model):
+            # delta = tok.choices[0].delta.content or ""
+            # print(f"PRINTING TOKEN: {tok}\n")
+        # print(delta, end="", flush=True)   # print each chunk as it arrives
+            # full_response += tok
+            yield tok
+
+        # print(f"\n\nPRINTING DELTA\n\n{full_response}\n")
+    # for tok in res:
+    #     delta = tok.choices[0].delta.content or ""
+    #     # print(delta, end="", flush=True)   # print each chunk as it arrives
+    #     full_response += delta
+
+        # result_json = agent1_causepredict(prompt, cause_prediction_llm_model)
+        # print(f"\n\nPRINTING RESULT JSON\n\n{result_json}")
+        # parsed = json.loads(result_json)
+        # return parsed
 
         # for tok in agent1_causepredict(prompt, cause_prediction_llm_model, api_key):
         #     yield tok
@@ -233,6 +262,8 @@ def cause_prediction_LLM(top2, cause_prediction_llm_model, image_summary, locati
 
 
         # return nemo_out
+
+        # print(f"PRINTING FULL RESPONSE\n\n{full_response}\n\nFULL RESPONSE OVER")
     
     except Exception as e:
         err = "Disruption occured during CAUSE PREDICTION AGENT runtime"

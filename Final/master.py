@@ -58,6 +58,20 @@ def response_generator(img, lat, lon):
     # print(f"Loaded {len(threat_summary_meta_data)} rows from the database")
     # print('\n\n----------\n\n')
 
+    # Get weather data
+    current_weather_df = current_weather(lat,lon)
+    current_weather_json = json.dumps(current_weather_df)
+    print(current_weather_df)
+
+    yield json.dumps({"type": "weather", "data": current_weather_df},
+                        ensure_ascii=False) + "\n"
+    hourly_weather_json = hourly_weather(lat,lon)
+    weather_api_data = ""
+    if current_weather_json:
+        weather_api_data += """
+        Current weather data:
+        """+ current_weather_json
+
     # Image to summary using vila
     image_summary = image_summarizer(img, api_key_nvd)
     print("Image summary:")
@@ -68,15 +82,16 @@ def response_generator(img, lat, lon):
     ########## Hardcoded Now, change Later ########## 
     #################################################
 
-    # calling weather API
+    
     summary = json.loads(image_summary)
-    current_weather_json = current_weather(lat,lon)
+    print(f"\n\nPrinting summary below\n{summary}\n")
+    # current_weather_json = current_weather(lat,lon)
     # hourly_weather_json = hourly_weather(lat,lon)
-    weather_api_data = ""
-    if current_weather_json :
-        weather_api_data += """
-        Current weather data:
-        """+ current_weather_json
+    # weather_api_data = ""
+    # if current_weather_json:
+    #     weather_api_data += """
+    #     Current weather data:
+    #     """+ current_weather_json
     # if hourly_weather_json:
     #     weather_api_data += """\n
     #     Hourly weather Data:
@@ -115,16 +130,24 @@ def response_generator(img, lat, lon):
             if not DRONE_AVAILABLE or summary['probability'] > 0.8:
                 agencies_alerted = alert_agencies(data=top_match)
                 print("Agenices Alerted: \n", agencies_alerted)
-            # cause_prediction_llm_buffer = []
-            # for tok in cause_prediction_LLM(top_match, cause_prediction_llm_model, image_summary, api_key_nvd, location, weather_api_data.strip()):
-            #     cause_prediction_llm_buffer.append(tok)
-            #     yield json.dumps({"type": "cause_prediction", "data": tok},
-            #                  ensure_ascii=False) + "\n"
-            # cause_prediction_llm_output = "".join(cause_prediction_llm_buffer)
-            cause_prediction_llm_output = cause_prediction_LLM(top_match, cause_prediction_llm_model, summary, location, weather_api_data.strip())
-            print("\n\nCause prediction LLM:")
-            print(cause_prediction_llm_output)
-            print('\n\n----------\n\n')
+            cause_prediction_llm_buffer = []
+            for tok in cause_prediction_LLM(top_match, cause_prediction_llm_model, summary, location, weather_api_data.strip()):
+                cause_prediction_llm_buffer.append(tok)
+                yield json.dumps({"type": "cause_prediction", "data": tok},
+                             ensure_ascii=False) + "\n"
+            cause_prediction_llm_string = "".join(cause_prediction_llm_buffer)
+            cause_prediction_llm_output = json.loads(cause_prediction_llm_string) # NEED TO MAKE THIS A CONCRETE FIX TOMORROW
+            # print(cause_prediction_llm_output)
+            print(f"\n\nCAUSE PREDICTION LLM OUTPUT TYPE: {type(cause_prediction_llm_output)}\n\n")
+            print(f"\n\nCAUSE PREDICTION LLM OUTPUT: {cause_prediction_llm_output}\n\n")
+            print(f"\n\nCAUSE PREDICTION BUFFER TYPE: {type(cause_prediction_llm_buffer)}\n\n")
+            print(f"\n\nCAUSE PREDICTION BUFFER OUTPUT: {cause_prediction_llm_buffer}\n\n")
+            print(f"\n\nCAUSE PREDICTION STRING TYPE: {type(cause_prediction_llm_string)}\n\n")
+            print(f"\n\nCAUSE PREDICTION STRING OUTPUT: {cause_prediction_llm_string}\n\n")
+            # cause_prediction_llm_output = cause_prediction_LLM(top_match, cause_prediction_llm_model, summary, location, weather_api_data.strip())
+            # print("\n\nCause prediction LLM:")
+            # print(cause_prediction_llm_output)
+            # print('\n\n----------\n\n')
 
         # Insights LLM
             insights_agent_output_json = insights_agent(summary, weather_api_data.strip(), insights_agents_model, cause_prediction_llm_output, agencies_alerted, DRONE_AVAILABLE)
