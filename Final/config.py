@@ -15,7 +15,7 @@ insights_agents_model = 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
 sql_database = os.environ.get("SQL_DATABASE","Wildfire_Response_Database")
 sql_user = os.environ.get("SQL_USER", "postgres")
 sql_password = os.environ.get("SQL_PASSWORD", "tdsynnex123")
-sql_host = os.environ.get("SQL_HOST_IP", "192.168.24.2")
+sql_host = os.environ.get("SQL_HOST_IP", "localhost")
 sql_port = os.environ.get("SQL_PORT", "5432")
 
 # Input API Key
