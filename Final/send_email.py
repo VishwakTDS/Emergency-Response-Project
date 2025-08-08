@@ -1,4 +1,6 @@
 import os
+import json
+import string
 import smtplib
 import mimetypes
 import tempfile
@@ -9,22 +11,39 @@ from email.message import EmailMessage
 from email import encoders
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
 
 from sql_connection import get_agency_contact
 
 def create_pdf(report_data, reportname):
-    c = canvas.Canvas(reportname, pagesize=letter)
-    _, height = letter
-    text_object = c.beginText(40, height - 50)
-    text_object.setFont("Helvetica", 12)
+    doc = SimpleDocTemplate(reportname, pagesize=letter)
+    styles = getSampleStyleSheet()
+
+    elements = []
+
+    # Add title
+    title_style = styles["Heading1"]
+    elements.append(Paragraph("INCIDENT RESPONSE", title_style))
+    elements.append(Spacer(1, 20))
 
     for key, value in report_data.items():
-        line = f"{key}: {value}"
-        text_object.textLine(line)
+        key_space = key.replace('_', ' ')
+        key_title = key_space.title()
 
-    c.drawText(text_object)
-    c.showPage()
-    c.save()
+        if isinstance(value, dict):
+            value_str = json.dumps(value, indent=2)
+        else:
+            value_str = str(value)
+
+        key_paragraph = Paragraph(f"<b>{key_title}:</b>", styles["Normal"])
+        elements.append(key_paragraph)
+
+        value_paragraph = Paragraph(value_str.replace("\n", "<br/>"), styles["Normal"])
+        elements.append(value_paragraph)
+        elements.append(Spacer(1, 10))
+
+    doc.build(elements)
 
 def send_email(payload, img, agencies, location):
 
@@ -48,7 +67,8 @@ def send_email(payload, img, agencies, location):
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
             pdf_report_path = temp_pdf.name
         
-        pdf_report = create_pdf(responder, pdf_report_path)
+        # pdf_report = create_pdf(responder, pdf_report_path)
+        create_pdf(responder, pdf_report_path)
 
         print(f"\nTHREAT TYPE: {responder["common_info"]["threat_type"]}")
 

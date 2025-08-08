@@ -38,11 +38,11 @@ def input_processing(data):
     return tmpimg
 
 def response_generator(img, lat, lon):
-    
+
     # Get weather data
     current_weather_df = current_weather(lat,lon)
     current_weather_json = json.dumps(current_weather_df)
-    print(current_weather_df)
+    print(f"Printing current weather data: {current_weather_df}")
 
     yield json.dumps({"type": "weather", "data": current_weather_df},
                         ensure_ascii=False) + "\n"
@@ -148,10 +148,6 @@ def response_generator(img, lat, lon):
             print("\n\n TYPE OF INSIGHTS AGENT OUTPUT\n\n")
             print(type(insights_agent_output_json))
 
-            # for key, val in insights_agent_output_json.items():
-            #     yield json.dumps({"type": "insights", "data": f"{key} ---> {val}"}, 
-            #                      ensure_ascii=False) + "\n"
-
             yield json.dumps({"type": "insights", "data": insights_agent_output_json},
                         ensure_ascii=False) + "\n"
             
@@ -167,7 +163,7 @@ def response_generator(img, lat, lon):
                 print("\nNEW INPUT Received...")
                 print('\n\n---------\n\n')
 
-                continue
+                # continue
             
             break
 
