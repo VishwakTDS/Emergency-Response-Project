@@ -82,6 +82,12 @@ const weatherCodeToIcon = (code, isDay) => {
 const LLM_Output = ({ causeText, insights, alertText, weather, isLoading, file, lat, lon }) => {
     const [isMetric, setIsMetric] = useState(false);
     const [weatherIcon,  setWeatherIcon]  = useState("");
+
+    const snakeToRegular = (textval) => {
+        let output = textval.replace(/(^\w)/g, g => g[0].toUpperCase()).replace(/([-_]\w)/g, g => " " + g[1].toUpperCase()).trim();
+        console.log(output);
+        return output;
+    }
     
     return (
         <div className="dashboard">
@@ -222,7 +228,27 @@ const LLM_Output = ({ causeText, insights, alertText, weather, isLoading, file, 
                             {causeText && (
                                 <section className="card cause-prediction-card">
                                     <div className="agent-response">
-                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{causeText}</ReactMarkdown>
+                                        <strong>Current Situation Summary:</strong><br />
+                                        
+                                        {Object.entries(causeText).map(([key, value]) => (
+                                            // console.log(key, value)
+                                            <div key={key}>
+                                                {}
+                                                <strong>{snakeToRegular(key)}</strong>:{' '}
+                                                {Array.isArray(value) ? (
+                                                    <div>
+                                                        {value.map((item, idx) => (
+                                                            <div key={idx}> {String(item)} </div>
+                                                        ))}
+                                                    </div>
+                                                ):(
+                                                    <span>{String(value)}</span>
+                                                )}
+                                            </div>
+                                            ))}
+                                        
+                                        
+
                                     </div>
                                 </section>
                             )}
@@ -251,11 +277,11 @@ const LLM_Output = ({ causeText, insights, alertText, weather, isLoading, file, 
                             
                             {alertText &&
                                 <section className="card alert-card">
-                                    <strong>Responder: </strong>
-                                    <span>
+                                    <strong>Responders: <br /> </strong>
+                                    <span style={{ whiteSpace: 'pre-line'}}>
                                         {alertText.alerts.map(alert => (
-                                        prettify(alert.responder)
-                                        )).join(', ')}
+                                            prettify(alert.agency)
+                                        )).join('\n')}
                                     </span>
                                 </section>
                             }

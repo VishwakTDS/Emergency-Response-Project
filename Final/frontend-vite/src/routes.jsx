@@ -9,7 +9,8 @@ import LLM_Output from "./llm_output";
 import Home from "./Home";
 
 function Routing() {
-    const [causeText,  setCauseText]  = useState("");
+    // const [causeText,  setCauseText]  = useState("");
+    const [causeText,  setCauseText]  = useState(null);
     const [insights,   setInsights]   = useState(null);
     const [alertText,  setAlertText]  = useState(null);
     const [weather,  setWeather]  = useState(null);

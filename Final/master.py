@@ -110,6 +110,8 @@ def response_generator(img, lat, lon):
 
     DRONE_AVAILABLE = True
 
+    agencies_alerted = None
+
     for attempt in (1, 2):
 
         # Fetch the top 2 event ids
@@ -126,28 +128,37 @@ def response_generator(img, lat, lon):
 
         try:
         # Cause Prediction LLM
-            agencies_alerted = None
-            if not DRONE_AVAILABLE or summary['probability'] > 0.8:
+            # agencies_alerted = None
+            # if not DRONE_AVAILABLE or summary['probability'] > 0.8:
+            print(f"Type of summary: {type(summary)}")
+            print(f"Type of summary probability: {type(summary['probability'])}")
+            
+            if float(summary['probability']) > 0.8:
                 agencies_alerted = alert_agencies(data=top_match)
                 print("Agenices Alerted: \n", agencies_alerted)
-            cause_prediction_llm_buffer = []
-            for tok in cause_prediction_LLM(top_match, cause_prediction_llm_model, summary, location, weather_api_data.strip()):
-                cause_prediction_llm_buffer.append(tok)
-                yield json.dumps({"type": "cause_prediction", "data": tok},
-                             ensure_ascii=False) + "\n"
-            cause_prediction_llm_string = "".join(cause_prediction_llm_buffer)
-            cause_prediction_llm_output = json.loads(cause_prediction_llm_string) # NEED TO MAKE THIS A CONCRETE FIX TOMORROW
-            # print(cause_prediction_llm_output)
-            print(f"\n\nCAUSE PREDICTION LLM OUTPUT TYPE: {type(cause_prediction_llm_output)}\n\n")
-            print(f"\n\nCAUSE PREDICTION LLM OUTPUT: {cause_prediction_llm_output}\n\n")
-            print(f"\n\nCAUSE PREDICTION BUFFER TYPE: {type(cause_prediction_llm_buffer)}\n\n")
-            print(f"\n\nCAUSE PREDICTION BUFFER OUTPUT: {cause_prediction_llm_buffer}\n\n")
-            print(f"\n\nCAUSE PREDICTION STRING TYPE: {type(cause_prediction_llm_string)}\n\n")
-            print(f"\n\nCAUSE PREDICTION STRING OUTPUT: {cause_prediction_llm_string}\n\n")
-            # cause_prediction_llm_output = cause_prediction_LLM(top_match, cause_prediction_llm_model, summary, location, weather_api_data.strip())
-            # print("\n\nCause prediction LLM:")
-            # print(cause_prediction_llm_output)
-            # print('\n\n----------\n\n')
+    # ---------- UNCOMMENT BELOW TO ENABLE STREAMING ---------- #
+            # cause_prediction_llm_buffer = []
+            # for tok in cause_prediction_LLM(top_match, cause_prediction_llm_model, summary, location, weather_api_data.strip()):
+            #     cause_prediction_llm_buffer.append(tok)
+            #     yield json.dumps({"type": "cause_prediction", "data": tok},
+            #                  ensure_ascii=False) + "\n"
+            # cause_prediction_llm_string = "".join(cause_prediction_llm_buffer)
+            # cause_prediction_llm_output = json.loads(cause_prediction_llm_string) # NEED TO MAKE THIS A CONCRETE FIX TOMORROW
+            # # print(cause_prediction_llm_output)
+            # print(f"\n\nCAUSE PREDICTION LLM OUTPUT TYPE: {type(cause_prediction_llm_output)}\n\n")
+            # print(f"\n\nCAUSE PREDICTION LLM OUTPUT: {cause_prediction_llm_output}\n\n")
+            # print(f"\n\nCAUSE PREDICTION BUFFER TYPE: {type(cause_prediction_llm_buffer)}\n\n")
+            # print(f"\n\nCAUSE PREDICTION BUFFER OUTPUT: {cause_prediction_llm_buffer}\n\n")
+            # print(f"\n\nCAUSE PREDICTION STRING TYPE: {type(cause_prediction_llm_string)}\n\n")
+            # print(f"\n\nCAUSE PREDICTION STRING OUTPUT: {cause_prediction_llm_string}\n\n")
+    # ---------- UNCOMMENT ABOVE TO ENABLE STREAMING ---------- #
+            cause_prediction_llm_output = cause_prediction_LLM(top_match, cause_prediction_llm_model, summary, location, weather_api_data.strip())
+            print("\n\nCause prediction LLM:")
+            yield json.dumps({"type": "cause_prediction", "data": cause_prediction_llm_output},
+                        ensure_ascii=False) + "\n"
+            print(cause_prediction_llm_output)
+
+            print('\n\n----------\n\n')
 
         # Insights LLM
             insights_agent_output_json = insights_agent(summary, weather_api_data.strip(), insights_agents_model, cause_prediction_llm_output, agencies_alerted, DRONE_AVAILABLE)
@@ -197,17 +208,24 @@ def response_generator(img, lat, lon):
 
         print("Alert LLM:")
 
+        # agency_res = None
+
         if agencies:
             agency_res = build_alert_payload(cause_prediction_llm_output, messages, agencies, lat, lon, json.loads(current_weather_json))
-        # else:
-        #     agency_res = 
+            print(json.dumps(agency_res, indent=2))
+            # yield_res = {"alerts":agency_res}
+            # print(yield_res)
+            yield json.dumps({"type": "alert", "data": {"alerts":agency_res}},
+                        ensure_ascii=False) + "\n"
 
-        print(json.dumps(agency_res, indent=2))
+        else:
+            print("No agencies were alerted.")
+        
         # if agency_res:
         #     yield json.dumps({"type": "alert", "data": agency_res},
         #                 ensure_ascii=False) + "\n"
 
-    
+        print(f"\n\nAGENCIES LIST:\n{agencies_alerted}")
     except Exception as e:
         err = "Encountered issues while invoking agents"
         print("error: {err}\n{e}")

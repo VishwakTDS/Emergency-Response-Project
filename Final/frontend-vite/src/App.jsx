@@ -91,7 +91,8 @@ function App({setCauseText, setInsights, setAlertText, setWeather, setIsLoading,
                 gotFirstChunk = true;
                 setIsLoading(false);
               }
-              setCauseText(prev => prev + obj.data);
+              // setCauseText(prev => prev + obj.data);
+              setCauseText(obj.data);
               break;
             case "insights":
               setInsights(obj.data);
