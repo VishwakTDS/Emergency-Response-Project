@@ -76,7 +76,6 @@ def agent1_causepredict(messages, cause_prediction_llm_model):
     #     base_url = "https://integrate.api.nvidia.com/v1",
     #     api_key = api_key_n
     # )
-    print("\n\nI am here\n\n")
     res = client.chat.completions.create(
         model=cause_prediction_llm_model,
         messages=messages,

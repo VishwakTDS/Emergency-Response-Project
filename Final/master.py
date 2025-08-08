@@ -12,6 +12,7 @@ from insights_agent import insights_agent
 from alert_agent import dispatch_to_responders, alert_agencies, build_alert_payload
 from uuid import uuid4
 import shutil
+from send_email import send_email
 
 # Process the POST input
 def input_processing(data):
@@ -37,27 +38,7 @@ def input_processing(data):
     return tmpimg
 
 def response_generator(img, lat, lon):
-    # Connect to database
-    # try:
-    #     results = connection_sql(sql_database)
-
-    # except Exception as e:
-    #     err = "Unsuccessful database connection attempt"
-    #     print(f"error: {err}\n{e}")
-    #     raise Exception(err) from e
     
-    # if results:
-    #     print(f"Connected to database")
-    # else:
-    #     err = "No database results found"
-    #     print(f"error: {err}")
-    #     raise Exception(err)
-
-    # # Preprocess data
-    # threat_summary_meta_data = preprocess_summary_sql(results)
-    # print(f"Loaded {len(threat_summary_meta_data)} rows from the database")
-    # print('\n\n----------\n\n')
-
     # Get weather data
     current_weather_df = current_weather(lat,lon)
     current_weather_json = json.dumps(current_weather_df)
@@ -77,10 +58,6 @@ def response_generator(img, lat, lon):
     print("Image summary:")
     print(image_summary)
     print('\n\n----------\n\n')
-
-    #################################################
-    ########## Hardcoded Now, change Later ########## 
-    #################################################
 
     
     summary = json.loads(image_summary)
@@ -106,6 +83,7 @@ def response_generator(img, lat, lon):
     # else:
 
     location = get_location(lat, lon)
+    print(f"\n\nLOCATION: {location}\nLOCATION TYPE: {type(location)}\n\n")
     top_match = embedder_reranker(embedding_model, reranker_model, summary, location)
 
     DRONE_AVAILABLE = True
@@ -132,7 +110,7 @@ def response_generator(img, lat, lon):
             # if not DRONE_AVAILABLE or summary['probability'] > 0.8:
             print(f"Type of summary: {type(summary)}")
             print(f"Type of summary probability: {type(summary['probability'])}")
-            
+
             if float(summary['probability']) > 0.8:
                 agencies_alerted = alert_agencies(data=top_match)
                 print("Agenices Alerted: \n", agencies_alerted)
@@ -202,30 +180,29 @@ def response_generator(img, lat, lon):
     # Alert LLM
     try:
         agencies = insights_agent_output_json.get("agency","")
-        # print("AGENCIES: ", agencies)
+        print("AGENCIES: ", agencies)
         messages = insights_agent_output_json.get("messages","")
         # print("MESSAGE TO AGENCIES: ", messages)
 
         print("Alert LLM:")
 
-        # agency_res = None
+        agency_res = False
 
         if agencies:
             agency_res = build_alert_payload(cause_prediction_llm_output, messages, agencies, lat, lon, json.loads(current_weather_json))
             print(json.dumps(agency_res, indent=2))
-            # yield_res = {"alerts":agency_res}
-            # print(yield_res)
             yield json.dumps({"type": "alert", "data": {"alerts":agency_res}},
                         ensure_ascii=False) + "\n"
 
         else:
             print("No agencies were alerted.")
         
-        # if agency_res:
-        #     yield json.dumps({"type": "alert", "data": agency_res},
-        #                 ensure_ascii=False) + "\n"
+        if agency_res:
+            yield json.dumps({"type": "alert", "data": {"alerts":agency_res}},
+                        ensure_ascii=False) + "\n"
+            
+            send_email(agency_res, img, agencies, location)
 
-        print(f"\n\nAGENCIES LIST:\n{agencies_alerted}")
     except Exception as e:
         err = "Encountered issues while invoking agents"
         print("error: {err}\n{e}")

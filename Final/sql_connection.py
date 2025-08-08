@@ -1,4 +1,4 @@
-from config import sql_user, sql_password, sql_host, sql_database
+from config import sql_user, sql_password, sql_host, sql_database, sql_port
 import os
 import psycopg2
 from langchain.docstore.document import Document
@@ -120,7 +120,7 @@ def preprocess_whole_sql(results,event_ids):
 def fetch_threat_info():
     conn = psycopg2.connect(
         host     = sql_host,
-        port     = os.getenv("SQL_PORT",   "5432"),
+        port     = sql_port,
         dbname   = sql_database,
         user     = sql_user,
         password = sql_password
@@ -139,7 +139,7 @@ def fetch_threat_info():
 def get_threat_data(threat_type, location):
     conn = psycopg2.connect(
         host     = sql_host,
-        port     = os.getenv("SQL_PORT",   "5432"),
+        port     = sql_port,
         dbname   = sql_database,
         user     = sql_user,
         password = sql_password
@@ -174,7 +174,7 @@ def get_threat_data(threat_type, location):
 def fetch_valid_causes(threat_type: str) -> list[str]:
     conn = psycopg2.connect(
         host     = sql_host,
-        port     = os.getenv("SQL_PORT",   "5432"),
+        port     = sql_port,
         dbname   = sql_database,
         user     = sql_user,
         password = sql_password
@@ -196,9 +196,9 @@ def fetch_valid_causes(threat_type: str) -> list[str]:
 
 
 def get_incidents_by_ids(incident_ids):
-    conn = conn = psycopg2.connect(
+    conn = psycopg2.connect(
         host     = sql_host,
-        port     = os.getenv("SQL_PORT",   "5432"),
+        port     = sql_port,
         dbname   = sql_database,
         user     = sql_user,
         password = sql_password
@@ -230,9 +230,9 @@ def get_incidents_by_ids(incident_ids):
 
 
 def get_incident_by_name(name):
-    conn = conn = psycopg2.connect(
+    conn = psycopg2.connect(
         host     = sql_host,
-        port     = os.getenv("SQL_PORT",   "5432"),
+        port     = sql_port,
         dbname   = sql_database,
         user     = sql_user,
         password = sql_password
@@ -262,6 +262,43 @@ def get_incident_by_name(name):
         "responding_agencies"
     ]
     return [dict(zip(cols, row)) for row in rows]
+
+
+def get_agency_contact(agency_list, location):
+    try:
+        conn = psycopg2.connect(
+            host     = sql_host,
+            port     = sql_port,
+            dbname   = sql_database,
+            user     = sql_user,
+            password = sql_password
+            )
+        
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+        query = """
+            SELECT agency_name, email
+            FROM agency_contact
+            WHERE state_name = %s
+              AND agency_name = ANY(%s)
+            ORDER BY agency_name;
+        """
+
+        cursor.execute(query, (location, agency_list))
+        rows = cursor.fetchall()
+
+        result = {row["agency_name"]: row["email"] for row in rows}
+
+        return result
+
+    except Exception as e:
+        print("Error fetching agency emails:", e)
+        return {}
+    finally:
+        if "cursor" in locals():
+            cursor.close()
+        if "conn" in locals():
+            conn.close()
 
 
 # def fetch_sops(threat_type: str, threat_cause: str, ics_level: int, agencies: list[str]) -> dict:
