@@ -22,7 +22,6 @@ def create_pdf(report_data, reportname):
 
     elements = []
 
-    # Add title
     title_style = styles["Heading1"]
     elements.append(Paragraph("INCIDENT RESPONSE", title_style))
     elements.append(Spacer(1, 20))
