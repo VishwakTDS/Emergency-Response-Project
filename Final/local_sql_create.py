@@ -51,6 +51,17 @@ CREATE TABLE IF NOT EXISTS sops (
   resources_required           TEXT NOT NULL,
   CONSTRAINT uq_sop UNIQUE (threat_id, ics_level, agency_id)
 );
+
+-- Agencies Contacts
+CREATE TABLE IF NOT EXISTS agency_contact (
+    contact_id SERIAL PRIMARY KEY,
+    agency_id INT NOT NULL REFERENCES agencies(agency_id),
+    agency_name TEXT NOT NULL,
+    state_name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    UNIQUE (agency_id, state_name)
+);
+
 """
 
 def main():

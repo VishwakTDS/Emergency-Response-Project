@@ -968,6 +968,44 @@ def build_default_sops(cur):
             insert_sop(cur, t_id, ics, a_id, proc, res)
 
 # -------------------------------
+# 6) Agencies Contact Info
+# -------------------------------
+
+def get_agency_contact(cur):
+    cur.execute("""
+            WITH states(state_name, state_code) AS (
+                VALUES
+                ('Alabama', 'AL'), ('Alaska', 'AK'), ('Arizona', 'AZ'), ('Arkansas', 'AR'),
+                ('California', 'CA'), ('Colorado', 'CO'), ('Connecticut', 'CT'), ('Delaware', 'DE'),
+                ('Florida', 'FL'), ('Georgia', 'GA'), ('Hawaii', 'HI'), ('Idaho', 'ID'),
+                ('Illinois', 'IL'), ('Indiana', 'IN'), ('Iowa', 'IA'), ('Kansas', 'KS'),
+                ('Kentucky', 'KY'), ('Louisiana', 'LA'), ('Maine', 'ME'), ('Maryland', 'MD'),
+                ('Massachusetts', 'MA'), ('Michigan', 'MI'), ('Minnesota', 'MN'), ('Mississippi', 'MS'),
+                ('Missouri', 'MO'), ('Montana', 'MT'), ('Nebraska', 'NE'), ('Nevada', 'NV'),
+                ('New Hampshire', 'NH'), ('New Jersey', 'NJ'), ('New Mexico', 'NM'), ('New York', 'NY'),
+                ('North Carolina', 'NC'), ('North Dakota', 'ND'), ('Ohio', 'OH'), ('Oklahoma', 'OK'),
+                ('Oregon', 'OR'), ('Pennsylvania', 'PA'), ('Rhode Island', 'RI'), ('South Carolina', 'SC'),
+                ('South Dakota', 'SD'), ('Tennessee', 'TN'), ('Texas', 'TX'), ('Utah', 'UT'),
+                ('Vermont', 'VT'), ('Virginia', 'VA'), ('Washington', 'WA'), ('West Virginia', 'WV'),
+                ('Wisconsin', 'WI'), ('Wyoming', 'WY')
+            )
+            INSERT INTO agency_contact (agency_id, agency_name, state_name, email)
+            SELECT
+                a.agency_id,
+                a.agency_name,
+                s.state_name,
+                LOWER(REPLACE(a.agency_name, ' ', '')) || LOWER(s.state_code) || '@emergency' || LOWER(s.state_code) || '.com' AS email
+            FROM
+                agencies a
+            CROSS JOIN
+                states s
+            ORDER BY
+                a.agency_id, s.state_name;
+        """)
+        
+
+
+# -------------------------------
 # 6) entry point
 # -------------------------------
 
@@ -983,8 +1021,9 @@ def main():
                 build_wildfire_sops(cur)
                 build_flood_sops(cur)
                 build_default_sops(cur)
+                get_agency_contact(cur)
 
-        print("agencies, threats, incidents, and SOP matrix populated.")
+        print("agencies, threats, incidents, and SOP matrix populated. Agencies contact info generated.")
     finally:
         conn.close()
 
