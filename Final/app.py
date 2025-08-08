@@ -108,8 +108,10 @@ def receive_data(data: Annotated[EmergencyInput, Form()]):
         def generate():
             for chunk in response_generator(temp_media.name, data.latitude, data.longitude):
                 if isinstance(chunk, (dict, list)):
+                    # print(f"\n\nChunk inside dict or list\nType: {type(chunk)}\nContent: {chunk}\n\n")
                     chunk = json.dumps(chunk, ensure_ascii=False)
                 else:
+                    # print(f"\n\nChunk inside normal\nType: {type(chunk)}\nContent: {chunk}\n\n")
                     chunk = str(chunk)
 
                 yield chunk
