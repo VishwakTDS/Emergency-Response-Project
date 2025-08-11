@@ -1,7 +1,8 @@
 from openai import OpenAI
 import json
 from sql_connection import fetch_sops
-from clients import client
+from clients import client_nvidia, client_hf
+from config import insights_agents_model_hf
 
 def agent2_llama(messages,insights_agents_model):
     
@@ -10,8 +11,8 @@ def agent2_llama(messages,insights_agents_model):
     #     api_key = api_key_n
     # )
 
-    res = client.chat.completions.create(
-        model=insights_agents_model,
+    res = client_hf.chat.completions.create(
+        model=insights_agents_model_hf,
         messages=messages,
         response_format={"type": "json_object"},
         temperature=0.6,

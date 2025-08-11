@@ -66,18 +66,20 @@
 from openai import OpenAI
 from embeddings_reranker import format_incidents
 from sql_connection import fetch_valid_causes
-from clients import client
+from clients import client_nvidia, client_hf
 import json
+from config import cause_prediction_llm_model_hf
 
 
 def agent1_causepredict(messages, cause_prediction_llm_model):
-    
+
     # client = OpenAI(
     #     base_url = "https://integrate.api.nvidia.com/v1",
     #     api_key = api_key_n
     # )
-    res = client.chat.completions.create(
-        model=cause_prediction_llm_model,
+
+    res = client_hf.chat.completions.create(
+        model=cause_prediction_llm_model_hf,
         messages=messages,
         temperature=0.6,
         response_format={"type": "json_object"}, # ---------- COMMENT THIS TO ENABLE STREAMING ----------
