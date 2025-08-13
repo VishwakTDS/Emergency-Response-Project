@@ -194,10 +194,9 @@ def response_generator(img, lat, lon):
             print("No agencies were alerted.")
         
         if agency_res:
+            send_email(agency_res, img, location)
             yield json.dumps({"type": "alert", "data": {"alerts":agency_res}},
                         ensure_ascii=False) + "\n"
-            
-            send_email(agency_res, img, agencies, location)
 
     except Exception as e:
         err = "Encountered issues while invoking agents"

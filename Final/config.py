@@ -28,8 +28,9 @@ api_key_openWeather = os.environ.get("GEOCODE_API_KEY", "47e473a0579dabe11724d58
 api_key_hf = os.environ.get("HF_API_KEY", "")
 
 # Send email
-sender_email = os.environ.get("SENDER_EMAIL", "sender@sender.com")
-sender_password = os.environ.get("SENDER_PASSWORD", "password123")
+sender_email = os.environ.get("SENDER_EMAIL", "")
+receiver_email = os.environ.get("RECEIVER_EMAIL", "")
+sender_password = os.environ.get("SENDER_PASSWORD", "")
 
 # SMTP Server Config
 smtp_config = {

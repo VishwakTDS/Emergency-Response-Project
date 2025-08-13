@@ -44,7 +44,7 @@ def create_pdf(report_data, reportname):
 
     doc.build(elements)
 
-def send_email(payload, img, agencies, location):
+def send_email_mailhog(payload, img, agencies, location):
 
     contact_details = {val:"internationalagency@emergency.com" for val in agencies}
 
@@ -79,7 +79,6 @@ def send_email(payload, img, agencies, location):
         msg["To"] = contact_details[responder["agency"]]
         msg.set_content(email_body)
 
-
         # Attach pdf report
         with open(pdf_report_path, "rb") as f:
             pdf_data = f.read()
@@ -112,3 +111,89 @@ def send_email(payload, img, agencies, location):
             smtp.send_message(msg)
         print(f"Email sent to {responder["agency"]} at {contact_details[responder["agency"]]}")
         print(f"PDF stored at {pdf_report_path}")
+
+# Setup details:
+# Make sure to add SENDER_EMAIL, RECEIVER_EMAIL, and SENDER_PASSWORD to your .env file
+# To get the SENDER_PASSWORD *DO NOT* use your email password
+# Instead, go to the link: https://myaccount.google.com/apppasswords
+# From there, sign in with your gmail account to generate an "App Password"
+
+import smtplib
+import os
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+
+from config import sender_email, receiver_email, sender_password
+
+def send_email(agency_res, img, location):
+    for responder in agency_res:
+        subject = f"Alert from ARES - {responder["common_info"]["threat_type"]} - Notifying {responder["agency"]}"
+        body = f"""
+            <html>
+                <body style="font-family: Arial, sans-serif; line-height:1.4;">
+                    <h2 style="color: darkred;">Alert from ARES — {responder["common_info"]["threat_type"]}</h2>
+                    <p><strong>Notifying agency:</strong> {responder["agency"]}</p>
+                    <p><strong>Location:</strong> {location}</p>
+                    <br>
+                    <h3>Details:</h3>
+        """
+        for key, val in responder.items():
+            pretty_key = key.replace("_", " ").title()
+
+             # 1) If it’s a list → make a sub‐bullet list
+            if isinstance(val, list):
+                body += f"<p><strong>{pretty_key}:</strong></p><ul>"
+                for item in val:
+                    body += f"<li>{item}</li>"
+                body += "</ul>"
+
+            # 2) If it’s a nested dict → drill one level deeper
+            elif isinstance(val, dict):
+                body += f"<p><strong>{pretty_key}:</strong></p>"
+                for subkey, subval in val.items():
+                    pretty_sub = subkey.replace("_", " ").title()
+                    if isinstance(subval, list):
+                        body += f"<p><strong>{pretty_sub}:</strong></p><ul>"
+                        for item in subval:
+                            body += f"<li>{item}</li>"
+                        body += "</ul>"
+                    else:
+                        body += f"<p>{pretty_sub}: {subval}</p>"
+
+            # 3) Otherwise it’s a primitive → just one line
+            else:
+                body += f"<p><strong>{pretty_key}:</strong> {val}</p>"
+
+        body += """
+                </body>
+            </html>
+        """
+
+        msg = MIMEMultipart()
+
+        msg['From'] = sender_email
+        msg['To'] = receiver_email
+        msg['Subject'] = subject
+
+        msg.attach(MIMEText(body, 'html'))
+
+        filename = os.path.basename(img)
+        attachment = open(img, "rb")
+
+        p = MIMEBase('application', 'octet-stream')
+        p.set_payload((attachment).read())
+
+        encoders.encode_base64(p)
+        
+        p.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+
+        msg.attach(p)
+
+        s = smtplib.SMTP('smtp.gmail.com', 587)
+        s.starttls()
+        s.login(sender_email, sender_password)
+        text = msg.as_string()
+        s.sendmail(sender_email, receiver_email, text)
+        s.quit()
